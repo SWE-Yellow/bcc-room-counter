@@ -1,55 +1,66 @@
-import { Presentation } from "./Presentation";
+import { Presentation } from "./Presentation_Objects/Presentation";
+import { Room } from "./Presentation_Objects/Room";
+import { Speaker } from "./Presentation_Objects/Speaker";
+import { TimeSlot } from "./Presentation_Objects/TimeSlot";
+import { DatabaseInterface } from "./DatabaseInterface";
 
 class UIInterface {
 
-    private allPresentations: Presentation[];
+    private presentations: Array<Presentation>;
+    private rooms: Array<Room>;
+    private speakers: Array<Speaker>;
+    private timeSlots: Array<TimeSlot>;
+    private dbInterface: DatabaseInterface;
 
-    public save(e: KeyboardEvent): boolean {
 
+    public savePresntation(topic: string, roomId: number, speakerId: number, timeId: number): boolean{
+        return null
     }
 
-    public delete(presentation: Presentation): boolean {
-
+    public saveSpeaker(first: string, last: string, email: string): boolean{
+        return null
     }
 
-    public modify(presentation: Presentation): boolean {
-
+    public saveRoom(room: string, capacity: string): boolean{
+        return null
     }
 
-    public search(toBeSearched: String): Presentation[] {
-        
+    public saveTime(startTime: string, endTime: string): boolean{
+        return null
     }
 
-    public displayAllFields(): boolean {
 
+    public fetchPresentations(): Map<String, Array<String>>{
+        return null
     }
 
-    private getAllFields(): Presentation {
-
+    public fetchSpeakers(): Map<String, Array<String>>{
+        return null
     }
 
-    private getRoom(): String {
-
+    public fetchRooms(): Map<String, Array<String>>{
+        return null
     }
 
-    private getTopic(): String {
-
+    public fetchTimes(): Map<String, Array<String>>{
+        return null
     }
 
-    private getSpeaker(): String {
 
+    public deltePresntation(topic: string, roomId: number, speakerId: number, timeId: number): boolean{
+        return null
     }
 
-    private getEmail(): String {
-
+    public deleteSpeaker(first: string, last: string, email: string): boolean{
+        return null
     }
 
-    private getStart(): Date {
-
+    public delteRoom(room: string, capacity: string): boolean{
+        return null
     }
 
-    private getEnd(): Date {
-        
+    public delteTime(startTime: string, endTime: string): boolean{
+        return null
     }
 
 }
