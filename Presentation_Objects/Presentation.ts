@@ -10,7 +10,7 @@ import { TimeSlot } from "./TimeSlot";
     protected room: Room;
     protected presentationId: number;
 
-    protected constructor(topic: string, speaker: Speaker, startTime: Date, endTime: Date, room: Room) {
+    protected constructor(topic: string, speaker: Speaker, time: TimeSlot, room: Room) {
 
     }
 
