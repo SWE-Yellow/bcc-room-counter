@@ -43,7 +43,7 @@ export class DatabaseInterface {
         return null
     }
 
-    public fetch_all_time_slot(): Array<TimeSlot>{
+    public fetch_all_time_slots(): Array<TimeSlot>{
         return null
     }
 
