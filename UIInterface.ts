@@ -44,9 +44,9 @@ class UIInterface {
      */
     public savePresntation(topic: string, roomId: number, speakerId: number, timeId: number): boolean{
 
-        let current_presentation = new ValidatedPresentation(topic, this.speakers[speakerId], this.timeSlots[timeId], this.rooms[roomId])
+        let currentPresentation = new ValidatedPresentation(topic, this.speakers[speakerId], this.timeSlots[timeId], this.rooms[roomId])
 
-        let status = this.dbInterface.save(current_presentation)
+        let status = this.dbInterface.save(currentPresentation)
 
         if(status){
             this.presentations = this.dbInterface.fetch_all_presentations()
@@ -63,18 +63,57 @@ class UIInterface {
      * @param email String for email uid
      */
     public saveSpeaker(first: string, last: string, email: string): boolean{
-        return null
+
+        let currentSpeaker = new ValidatedSpeaker(0, first, last, email)
+
+        let status = this.dbInterface.save(currentSpeaker)
+
+        if(status){
+            this.speakers = this.dbInterface.fetch_all_speakers()
+        }
+
+        return status
     }
 
+    /**
+     * Save a room to the database
+     * 
+     * @param room name of the room
+     * @param capacity capacity of the room
+     */
     public saveRoom(room: string, capacity: string): boolean{
-        return null
+
+        let currentRoom = new ValidatedRoom(room, +capacity)
+
+        let status = this.dbInterface.save(currentRoom)
+
+        if(status){
+            this.rooms = this.dbInterface.fetch_all_rooms()
+        }
+
+        return status
     }
 
+    /**
+     * Save a time to the database
+     * 
+     * @param startTime start of the time slot
+     * @param endTime end of the time slot
+     */
     public saveTime(startTime: string, endTime: string): boolean{
-        return null
+
+        let current_time = new ValidatedTimeSlot(0, new Date(Date.parse(startTime)), new Date(Date.parse(endTime)))
+
+        let status = this.dbInterface.save(current_time)
+
+        if(status){
+            this.timeSlots = this.dbInterface.fetch_all_time_slots()
+        }
+
+        return status
     }
 
-
+    
     public fetchPresentations(): Map<String, Array<String>>{
         return null
     }
