@@ -112,10 +112,28 @@ class UIInterface {
 
         return status
     }
-
     
     public fetchPresentations(): Map<String, Array<String>>{
-        return null
+        
+        let presentations: Map<String, Array<String>>
+        let pArray = this.dbInterface.fetch_all_presentations()
+        let topics: Array<String>
+        let rooms: Array<String>
+        let speakers: Array<String>
+        let times: Array<String>
+
+        for(let index = 0; index < pArray.length; index++) {
+            topics[index] = pArray[index].getTopic()
+            rooms[index] = pArray[index].getRoom().getId().toString()
+            speakers[index] = pArray[index].getSpeaker().getId().toString()
+            times[index] = pArray[index].getTime().getId().toString()
+        }
+        presentations.set("topic", topics)
+        presentations.set("roomId", rooms)
+        presentations.set("speakersId", speakers)
+        presentations.set("timeId", times)
+        
+        return presentations
     }
 
     public fetchSpeakers(): Map<String, Array<String>>{
