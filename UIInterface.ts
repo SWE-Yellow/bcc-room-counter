@@ -140,16 +140,79 @@ class UIInterface {
         return presentations
     }
 
+    /**
+     * Returns a map of speakers from the database
+     */
     public fetchSpeakers(): Map<String, Array<String>>{
-        return null
+
+        this.speakers = this.dbInterface.fetch_all_speakers()
+
+        let speakers: Map<String, Array<String>>
+        let firstNames: Array<String>
+        let lastNames: Array<String>
+        let ids: Array<String>
+
+        for(let index = 0; index < this.presentations.length; index++) {
+            firstNames[index] = this.speakers[index].getFirstName()
+            lastNames[index] = this.speakers[index].getLastName()
+            ids[index] = this.speakers[index].getId().toString()
+        }
+
+        speakers.set("firstName", firstNames)
+        speakers.set("lastName", lastNames)
+        speakers.set("id", ids)
+
+        return speakers
     }
 
+    /**
+     * Returns a map of rooms from the database
+     */
     public fetchRooms(): Map<String, Array<String>>{
-        return null
+        
+        this.rooms = this.dbInterface.fetch_all_rooms()
+
+        let rooms: Map<String, Array<String>>
+        let roomNames: Array<String>
+        let capacities: Array<String>
+        let ids: Array<String>
+
+        for(let index = 0; index < this.presentations.length; index++) {
+            roomNames[index] = this.rooms[index].getName()
+            capacities[index] = this.rooms[index].getCapacity().toString()
+            ids[index] = this.rooms[index].getId().toString()
+        }
+
+        rooms.set("roomName", roomNames)
+        rooms.set("roomCapacity", capacities)
+        rooms.set("id", ids)
+
+        return rooms
     }
 
+    /**
+     * Returns a map of timeslots from the database
+     */
     public fetchTimes(): Map<String, Array<String>>{
-        return null
+
+        this.timeSlots = this.dbInterface.fetch_all_time_slots()
+
+        let timeSlots: Map<String, Array<String>>
+        let startTimes: Array<String>
+        let endTimes: Array<String>
+        let ids: Array<String>
+
+        for(let index = 0; index < this.presentations.length; index++) {
+            startTimes[index] = this.timeSlots[index].getStart().toTimeString()
+            endTimes[index] = this.timeSlots[index].getEnd().toTimeString()
+            ids[index] = this.timeSlots[index].getId().toString()
+        }    
+        
+        timeSlots.set("startTime", startTimes)
+        timeSlots.set("endTime", endTimes)
+        timeSlots.set("id", ids)
+
+        return timeSlots
     }
 
 
