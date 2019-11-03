@@ -153,17 +153,15 @@ class UIInterface {
     }
 
 
-    public deletePresentation(topic: string, roomId: number, speakerId: number, timeId: number): boolean{
-
-        let deleted: boolean = false;
-
-        // Get room, speaker, and time from the given UID
-        let room:       Room        = this.rooms[roomId];
-        let speaker:    Speaker     = this.speakers[speakerId];
-        let time:       TimeSlot    = this.timeSlots[timeId];
+    /**
+     * Attempts to delete given presentation with unique ID "index" from database.
+     * 
+     * @param index Index from array for the presentation
+     */
+    public deletePresentation(index: number): boolean{
         
-        // Create presentation object from parameters
-        let deletedPresentation: Presentation = new ValidatedPresentation(topic, speaker, time, room);
+        // Get presentation object based on index (UID)
+        let deletedPresentation: Presentation = this.presentations[index];
 
         // Attempt to delete presentation from database
         let dbDeleted = this.dbInterface.delete(deletedPresentation);
@@ -171,20 +169,21 @@ class UIInterface {
         // If successfully deleted
         if (dbDeleted) {
             // Update presentations from database
-            // Set deleted flag to true
             this.presentations = this.dbInterface.fetch_all_presentations();
-            deleted = true;
         }
 
-        return deleted;
+        return dbDeleted;
     }
 
-    public deleteSpeaker(first: string, last: string, email: string): boolean{
-        
-        let deleted: boolean = false;
+    /**
+     * Attempts to delete given speaker with unique ID "index" from database.
+     * 
+     * @param index Index from array for the speaker
+     */
+    public deleteSpeaker(index: number): boolean{
 
-        // Build speaker object from parameters
-        let deletedSpeaker: Speaker = new ValidatedSpeaker(first, last, email);
+        // Get presentation object based on index (UID)
+        let deletedSpeaker: Speaker = this.speakers[index];
         
         // Attempt to delete given speaker in database
         let dbDeleted = this.dbInterface.delete(deletedSpeaker);
@@ -192,29 +191,21 @@ class UIInterface {
         // If successfully deleted
         if (dbDeleted) {
             // Update speakers from database
-            // Set deleted flag to true
             this.speakers = this.dbInterface.fetch_all_speakers();
-            deleted = true;
         }
 
-        return deleted;
+        return dbDeleted;
     }
 
     /**
-     * Delete given room from database. Fails if given room is not found in database
+     * Attempts to delete given room with unique ID "index" from database.
      * 
-     * @param room Name of the room
-     * @param capacity Maximum number of occupants supported by the room
+     * @param index Index from array for the room
      */
-    public deleteRoom(room: string, capacity: string): boolean{
+    public deleteRoom(index: number): boolean{
 
-        let deleted: boolean = false;
-
-        // Convert string capacity to integer
-        let capacityInt: number = parseInt(capacity);
-
-        // Build room object from parameters
-        let deletedRoom: Room = new ValidatedRoom(room, capacityInt);
+        // Get presentation object based on index (UID)
+        let deletedRoom: Room = this.rooms[index];
 
         // Attempt to delete given room in database
         let dbDeleted = this.dbInterface.delete(deletedRoom);
@@ -222,43 +213,32 @@ class UIInterface {
         // If successfully deleted
         if (dbDeleted) {
             // Update room from database
-            // Set deleted flag to true
             this.rooms = this.dbInterface.fetch_all_rooms();
-            deleted = true;
         }
 
-        return deleted;
+        return dbDeleted;
     }
 
-    public deleteTime(startTime: string, endTime: string): boolean{
+    /**
+     * Attempts to delete given time slot with unique ID "index" from database.
+     * 
+     * @param index Index from array for the time slot
+     */
+    public deleteTime(index: number): boolean{
 
-        let deleted: boolean = false;
+        // Get presentation object based on index (UID)
+        let deletedTime: TimeSlot = this.timeSlots[index];
 
-        // If invalid format, then Date.parse will return NaN
-        let startDateTime:  number = Date.parse(startTime);
-        let endDatetime:    number = Date.parse(endTime);
-        
-        // Ensure startDatetime and endDateTime were successful (not NaN)
-        // Cannot delete with improper start or end time
-        if (startDateTime !== NaN && endDatetime !== NaN){
+        // Delete the given timeslot in database
+        let dbDeleted = this.dbInterface.delete(deletedTime);
 
-            // How will I know the UID?
-            // Would it make more sense to get the UID as parameter rather than start/end time?
-            let deletedTime: TimeSlot = new ValidatedTimeSlot(-1, new Date(startDateTime), new Date(endDatetime));
-
-            // Delete the given timeslot in database
-            let dbDeleted = this.dbInterface.delete(deletedTime);
-
-            // If successfully deleted
-            if (dbDeleted) {
-                // Update timeslots from database
-                // Set deleted flag to true
-                this.timeSlots = this.dbInterface.fetch_all_time_slots();
-                deleted = true;
-            }
+        // If successfully deleted
+        if (dbDeleted) {
+            // Update timeslots from database
+            this.timeSlots = this.dbInterface.fetch_all_time_slots();
         }
         
-        return deleted;
+        return dbDeleted;
     }
 
 }
