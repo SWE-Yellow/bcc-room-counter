@@ -131,20 +131,112 @@ class UIInterface {
     }
 
 
-    public deltePresntation(topic: string, roomId: number, speakerId: number, timeId: number): boolean{
-        return null
+    public deletePresentation(topic: string, roomId: number, speakerId: number, timeId: number): boolean{
+
+        let deleted: boolean = false;
+
+        // Get room, speaker, and time from the given UID
+        let room:       Room        = this.rooms[roomId];
+        let speaker:    Speaker     = this.speakers[speakerId];
+        let time:       TimeSlot    = this.timeSlots[timeId];
+        
+        // Create presentation object from parameters
+        let deletedPresentation: Presentation = new ValidatedPresentation(topic, speaker, time, room);
+
+        // Attempt to delete presentation from database
+        let dbDeleted = this.dbInterface.delete(deletedPresentation);
+
+        // If successfully deleted
+        if (dbDeleted) {
+            // Update presentations from database
+            // Set deleted flag to true
+            this.presentations = this.dbInterface.fetch_all_presentations();
+            deleted = true;
+        }
+
+        return deleted;
     }
 
     public deleteSpeaker(first: string, last: string, email: string): boolean{
-        return null
+        
+        let deleted: boolean = false;
+
+        // Build speaker object from parameters
+        let deletedSpeaker: Speaker = new ValidatedSpeaker(first, last, email);
+        
+        // Attempt to delete given speaker in database
+        let dbDeleted = this.dbInterface.delete(deletedSpeaker);
+
+        // If successfully deleted
+        if (dbDeleted) {
+            // Update speakers from database
+            // Set deleted flag to true
+            this.speakers = this.dbInterface.fetch_all_speakers();
+            deleted = true;
+        }
+
+        return deleted;
     }
 
-    public delteRoom(room: string, capacity: string): boolean{
-        return null
+    /**
+     * Delete given room from database. Fails if given room is not found in database
+     * 
+     * @param room Name of the room
+     * @param capacity Maximum number of occupants supported by the room
+     */
+    public deleteRoom(room: string, capacity: string): boolean{
+
+        let deleted: boolean = false;
+
+        // Convert string capacity to integer
+        let capacityInt: number = parseInt(capacity);
+
+        // Build room object from parameters
+        let deletedRoom: Room = new ValidatedRoom(room, capacityInt);
+
+        // Attempt to delete given room in database
+        let dbDeleted = this.dbInterface.delete(deletedRoom);
+
+        // If successfully deleted
+        if (dbDeleted) {
+            // Update room from database
+            // Set deleted flag to true
+            this.rooms = this.dbInterface.fetch_all_rooms();
+            deleted = true;
+        }
+
+        return deleted;
     }
 
-    public delteTime(startTime: string, endTime: string): boolean{
-        return null
+    public deleteTime(startTime: string, endTime: string): boolean{
+
+        let deleted: boolean = false;
+
+        // If invalid format, then Date.parse will return NaN
+        let startDateTime:  number = Date.parse(startTime);
+        let endDatetime:    number = Date.parse(endTime);
+        
+        // Ensure startDatetime and endDateTime were successful (not NaN)
+        // Cannot delete with improper start or end time
+        if (startDateTime !== NaN && endDatetime !== NaN){
+
+            // How will I know the UID?
+            // Would it make more sense to get the UID as parameter rather than start/end time?
+            let deletedTime: TimeSlot = new ValidatedTimeSlot(-1, new Date(startDateTime), new Date(endDatetime));
+
+            // Delete the given timeslot in database
+            let dbDeleted = this.dbInterface.delete(deletedTime);
+
+            // If successfully deleted
+            if (dbDeleted) {
+                // Update timeslots from database
+                // Set deleted flag to true
+                this.timeSlots = this.dbInterface.fetch_all_time_slots();
+                deleted = true;
+            }
+        }
+        
+        return deleted;
     }
 
 }
