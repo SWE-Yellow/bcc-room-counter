@@ -8,11 +8,11 @@ import { ValidatedRoom } from "./Presentation_Objects/Validated/ValidatedRoom";
 import { ValidatedSpeaker } from "./Presentation_Objects/Validated/ValidatedSpeaker";
 import { ValidatedTimeSlot } from "./Presentation_Objects/Validated/ValidatedTimeSlot";
 
-let con; //too lazy to think about other way than using global variable.
-
 export class DatabaseInterface {
 
-    //testing configs
+    public con: any;
+
+    //testing this.configs
     private readonly USERNAME: string =         "root";
     private readonly PASSWORD: string =         "password";
     private readonly DATABASE_NAME: string =    "test";
@@ -23,35 +23,96 @@ export class DatabaseInterface {
     private connect(): void {
       let mysql = require('mysql');
 
-      //should probably create a config var or something, it's ugly like this.
-      con = mysql.createConnection({
+      //should probably create a config or something, it's ugly like this.
+      this.con = mysql.createConnection({
         host: this.HOST,
         user: this.USERNAME,
         password: this.PASSWORD,
         database: this.DATABASE_NAME
       });
-      con.connect(function(err) {
+      this.con.this.connect(function(err) {
         if(err) throw err;
-        console.log("Connected");
+        this.console.log("connected");
       });
+
+      /* Pool
+      this.con = mysql.createPool({
+        host:       this.HOST,
+        user:       this.USERNAME,
+        password:   this.PASSWORD,
+        database:   this.DATABASE_NAME
+      });
+
+      this.con.getConnection((err, connection) => {
+        if(err) {
+          if(err.code === 'PROTOCOL_CONNECTION_LOST') {
+            console.error('Database connection was closed.');
+          }
+          if(err.code === 'ER_CON_COUNT_ERROR') {
+            console.error('Database has too many connections.');
+          }
+          if(err.code === 'ECONNREFUSED') {
+            console.error('Database connection was refused.');
+          }
+        }
+        if(connection) connection.release()
+      });
+      */
+
     }
 
-    private disconnect(): void{}
+    private disconnect(): void{
+      this.con.end(function(err) {
+        if(err) throw err;
+      });
+      //this.con.destroy();
+    }
 
-    public save(selected: Presentation): boolean;
-    public save(selected: Room): boolean;
-    public save(selected: Speaker): boolean;
+    public save(selected: Presentation): boolean {
+
+    };
+
+    public save(selected: Room): boolean {
+      let save: boolean = false;
+
+      /*
+      this.con.query({
+        sql: "INSERT INTO Room SET idRoom = ?, name = ?, capacity = ?",
+        timeout: 40000,
+        values: [selected.getId(), selected.getName(), selected.getCapacity()]
+      }, function(error, result, fields) {
+        save = true;
+      });
+      */
+
+      let sql = "INSERT INTO Room (idRoom, name, capacity) VALUES ('"+selected.getId()+"', '"+selected.getName()+"', '"+selected.getCapacity()+"')";
+      this.con.query(sql, function(err, result) {
+        if(err) throw err;
+        save = true;
+      });
+      return save;
+    };
+
+    public save(selected: Speaker): boolean {
+      let save: boolean = false;
+      let sql = "INSERT INTO Speakers (speakerId, first, last, email) VALUES ('"+selected.getId()+"', '"+selected.getFirstName()+"', '"+selected.getLastName()+"', '"+selected.getEmail()+"')";
+      this.con.query(sql, function(err, result) {
+        if(err) throw err;
+        save = true;
+      });
+      return save;
+    };
 
     //stubs using test db.
     //table names and columns should be modified according to the real db.
     public save(selected: TimeSlot): boolean {
-      console.log("Timeslot save");
-      let sql = "INSERT INTO Timeslot (idTimeslot, startTime, endTime) VALUES ('"+selected.uid+","+selected.startTime+","+selected.endTime+"')";
-      con.query(sql, function(err, result) {
+      let save: boolean = false;
+      let sql = "INSERT INTO Timeslot (idTimeslot, startTime, endTime) VALUES ('"+selected.getId()+","+selected.getStart()+","+selected.getEnd()+"')";
+      this.con.query(sql, function(err, result) {
         if(err) throw err;
-        console.log("Timeslot saved");
-        return 1;
+        save = true;
       });
+      return save;
     };
 
     public save(selected: any): boolean{
@@ -60,46 +121,85 @@ export class DatabaseInterface {
 
     //result may be Object, not Array?
     public fetch_all_presentations(): Array<Presentation>{
-      console.log("Fetch all presentations");
-      con.query("SELECT * FROM Presentations", function(err, result, fields) {
+      let res: Array<Presentation> = [];
+      this.con.query("SELECT * FROM Presentations", function(err, result, fields) {
         if(err) throw err;
-        return result;
+        res = result;
       });
-        return null;
+      return res;
     }
 
     public fetch_all_rooms(): Array<Room>{
-      console.log("Fetch all rooms");
-      con.query("SELECT * FROM Room", function(err, result, fields) {
+      let res: Array<Room> = [];
+      this.con.query("SELECT * FROM Room", function(err, result, fields) {
         if(err) throw err;
-        return result;
+        res = result;
       });
-        return null
+        return res;
     }
 
     public fetch_all_speakers(): Array<Speaker>{
-      console.log("Fetch all speakers");
-      con.query("SELECT * FROM Speakers", function(err, result, fields) {
+      let res: Array<Speaker> = [];
+      this.con.query("SELECT * FROM Speakers", function(err, result, fields) {
         if(err) throw err;
-        return result;
+        res = result;
       });
-        return null
+        return res;
     }
 
     public fetch_all_time_slot(): Array<TimeSlot>{
-      console.log("Fetch all timeslot");
-      con.query("SELECT * FROM Timeslot", function(err, result, fields) {
+      let res: Array<TimeSlot> = [];
+      this.con.query("SELECT * FROM Timeslot", function(err, result, fields) {
         if(err) throw err;
-        return result;
+        res = result;
       });
-        return null
+        return res;
     }
 
 
-    public delete(selected: Presentation): boolean;
-    public delete(selected: Room): boolean;
-    public delete(selected: Speaker): boolean;
-    public delete(selecetd: TimeSlot): boolean;
+    public delete(selected: Presentation): boolean{
+      let d: boolean = false;
+      //Delete Presentation
+      let sql = "DELETE FROM Presentations WHERE topic = '"+selected.getTopic()+"'";
+      this.con.query(sql, function(err, result) {
+        if(err) throw err;
+        d = true;
+      });
+      return d;
+    };
+
+    public delete(selected: Room): boolean{
+      let d: boolean = false;
+      //Delete Room
+      let sql = "DELETE FROM Room WHERE name = '"+selected.getName()+"' AND capacity = '"+selected.getCapacity()+"'";
+      this.con.query(sql, function(err, result) {
+        if(err) throw err;
+        d = true;
+      });
+      return d;
+    };
+
+    public delete(selected: Speaker): boolean{
+      let d: boolean = false;
+      //Delete Speaker
+      let sql = "DELETE FROM Speakers WHERE first = '"+selected.getFirstName()+"' AND last = '"+selected.getLastName()+"' AND email = '"+selected.getEmail()+"'";
+      this.con.query(sql, function(err, result) {
+        if(err) throw err;
+        d = true;
+      });
+      return d;
+    };
+
+    public delete(selected: TimeSlot): boolean{
+      let d: boolean = false;
+      //Delete TimeSlot
+      let sql = "DELETE FROM Timeslot WHERE startTime = '"+selected.getStart()+"' AND endTime = '"+selected.getEnd()+"'";
+      this.con.query(sql, function(err, result) {
+        if(err) throw err;
+        d = true;
+      });
+      return d;
+    };
 
     public delete(selected: any): boolean{
         return null
