@@ -42,9 +42,9 @@ class UIInterface {
      * @param speakerId speakerId number in database
      * @param timeId timeslotId number in database
      */
-    public savePresntation(topic: string, roomId: number, speakerId: number, timeId: number): boolean{
+    public savePresntation(index: number): boolean{
 
-        let currentPresentation = new ValidatedPresentation(topic, this.speakers[speakerId], this.timeSlots[timeId], this.rooms[roomId])
+        let currentPresentation = this.presentations[index]
 
         let status = this.dbInterface.save(currentPresentation)
 
@@ -62,9 +62,9 @@ class UIInterface {
      * @param last String for surname
      * @param email String for email uid
      */
-    public saveSpeaker(first: string, last: string, email: string): boolean{
+    public saveSpeaker(index: number): boolean{
 
-        let currentSpeaker = new ValidatedSpeaker(0, first, last, email)
+        let currentSpeaker = this.speakers[index]
 
         let status = this.dbInterface.save(currentSpeaker)
 
@@ -81,9 +81,9 @@ class UIInterface {
      * @param room name of the room
      * @param capacity capacity of the room
      */
-    public saveRoom(room: string, capacity: string): boolean{
+    public saveRoom(index: number): boolean{
 
-        let currentRoom = new ValidatedRoom(room, +capacity)
+        let currentRoom = this.rooms[index]
 
         let status = this.dbInterface.save(currentRoom)
 
@@ -100,9 +100,9 @@ class UIInterface {
      * @param startTime start of the time slot
      * @param endTime end of the time slot
      */
-    public saveTime(startTime: string, endTime: string): boolean{
+    public saveTime(index: number): boolean{
 
-        let current_time = new ValidatedTimeSlot(0, new Date(Date.parse(startTime)), new Date(Date.parse(endTime)))
+        let current_time = this.timeSlots[index]
 
         let status = this.dbInterface.save(current_time)
 
@@ -113,20 +113,24 @@ class UIInterface {
         return status
     }
     
+    /**
+     * Returns a map of presentations from the database
+     */
     public fetchPresentations(): Map<String, Array<String>>{
+
+        this.presentations = this.dbInterface.fetch_all_presentations()
         
         let presentations: Map<String, Array<String>>
-        let pArray = this.dbInterface.fetch_all_presentations()
         let topics: Array<String>
         let rooms: Array<String>
         let speakers: Array<String>
         let times: Array<String>
 
-        for(let index = 0; index < pArray.length; index++) {
-            topics[index] = pArray[index].getTopic()
-            rooms[index] = pArray[index].getRoom().getId().toString()
-            speakers[index] = pArray[index].getSpeaker().getId().toString()
-            times[index] = pArray[index].getTime().getId().toString()
+        for(let index = 0; index < this.presentations.length; index++) {
+            topics[index] = this.presentations[index].getTopic()
+            rooms[index] = this.presentations[index].getRoom().getId().toString()
+            speakers[index] = this.presentations[index].getSpeaker().getId().toString()
+            times[index] = this.presentations[index].getTime().getId().toString()
         }
         presentations.set("topic", topics)
         presentations.set("roomId", rooms)
