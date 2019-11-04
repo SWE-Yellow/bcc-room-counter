@@ -1,5 +1,5 @@
 import { Room } from "../Room";
-import { Validated } from "./Validated";
+import { Validated, Validator } from "./Validated";
 
 export class ValidatedRoom extends Room implements Validated{
 
@@ -8,6 +8,10 @@ export class ValidatedRoom extends Room implements Validated{
     }
 
     public validate(): boolean{
-        return null
+        if (!Validator.isStringValid(this.roomName))
+            return false
+        if (!Validator.isIntValid(this.roomCapacity))
+            return false
+        return true
     }
 }

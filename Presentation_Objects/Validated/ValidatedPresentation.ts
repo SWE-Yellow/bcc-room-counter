@@ -1,6 +1,6 @@
 import { Presentation } from "../Presentation";
 import { Room } from "../Room";
-import { Validated } from "./Validated";
+import { Validated, Validator } from "./Validated";
 import { Speaker } from "../Speaker";
 import { TimeSlot } from "../TimeSlot";
 
@@ -11,6 +11,9 @@ export class ValidatedPresentation extends Presentation implements Validated{
     }
 
     public validate(): boolean{
-        return null
+        if (Validator.isStringValid(this.topic))
+            return false
+        //TODO: What else do we validate here?
+        return true
     }
 }
