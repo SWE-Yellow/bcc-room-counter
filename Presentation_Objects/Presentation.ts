@@ -15,38 +15,51 @@ import { TimeSlot } from "./TimeSlot";
     }
 
     public getTopic(): string {
-        return null
+        return this.topic
     }
 
-    public setTopic(topic: String): void {}
+    public setTopic(topic: string): void {
+        this.topic = topic
+    }
 
 
     public getSpeaker(): Speaker {
-        return null
+        return this.speaker
     }
 
-    public setSpeaker(speaker: Speaker): void{}
+    public setSpeaker(speaker: Speaker): void {
+        this.speaker = speaker
+    }
 
 
     public getRoom(): Room {
-        return null
+        return this.room
     }
 
-    public setRoom(room: Room): void{}
+    public setRoom(room: Room): void {
+        this.room = room
+    }
 
 
     public getTime(): TimeSlot{
-        return null
+        return this.time
     }
 
-    public setTime(time: TimeSlot): void{}
+    public setTime(time: TimeSlot): void {
+        this.time = time
+    }
 
 
     public getPresentationId(): number {
-        return null
+        return this.presentationId
     }
 
     public getStrings(): Array<string>{
-        return null
+        return [
+            this.topic,
+            this.speaker.getFirstName + " " + this.speaker.getLastName,
+            this.room.getName(),
+            this.time.getStart.toString + "-" + this.time.getEnd.toString
+        ]
     }
 }
