@@ -5,30 +5,35 @@ export class TimeSlot{
     protected endTime: Date;
 
     protected constructor(uid: number, startTime: Date, endTime:Date){
-
+        this.uid=uid;
+        this.startTime=startTime;
+        this.endTime=endTime;
     }
-
 
     public getStart(): Date{
-        return null
+        return startTime;
     }
 
-    public setStart(start: Date): void{}
+    public setStart(start: Date): void{
+        this.startTime=start;
+    }
 
 
     public getEnd(): Date{
-        return null
+        return endTime;
     }
 
-    public setEnd(end: Date): void{}
+    public setEnd(end: Date): void{
+        this.endTime=end;
+    }
 
 
     public getId(): number{
-        return null
+        return uid;
     }
 
     public getStrings(): Array<string>{
-        return null
+        return [String(startTime), String(endTime)];
     }
 
 }
