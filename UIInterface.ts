@@ -10,7 +10,7 @@ import { ValidatedTimeSlot } from "./Presentation_Objects/Validated/ValidatedTim
 
 import { DatabaseInterface } from "./DatabaseInterface";
 
-class UIInterface {
+export default class UIInterface {
 
     private presentations: Array<Presentation>;
     private rooms: Array<Room>;
@@ -222,20 +222,29 @@ class UIInterface {
      * @param index Index from array for the presentation
      */
     public deletePresentation(index: number): boolean{
+
+        // Flag to determine if the presentation was deleted
+        let deleted: boolean = false;
+
+        // Validate the index
+        if ( this.isValidIndex(index) ) {
         
-        // Get presentation object based on index (UID)
-        let deletedPresentation: Presentation = this.presentations[index];
+            // Get presentation object based on index (UID)
+            let deletedPresentation: Presentation = this.presentations[index];
 
-        // Attempt to delete presentation from database
-        let dbDeleted = this.dbInterface.delete(deletedPresentation);
+            // Attempt to delete presentation from database
+            let dbDeleted = this.dbInterface.delete(deletedPresentation);
 
-        // If successfully deleted
-        if (dbDeleted) {
-            // Update presentations from database
-            this.presentations = this.dbInterface.fetch_all_presentations();
+            // If successfully deleted
+            if (dbDeleted) {
+                // Update presentations from database
+                // Set deleted flag
+                this.presentations = this.dbInterface.fetch_all_presentations();
+                deleted = true;
+            }
         }
 
-        return dbDeleted;
+        return deleted;
     }
 
     /**
@@ -245,19 +254,28 @@ class UIInterface {
      */
     public deleteSpeaker(index: number): boolean{
 
-        // Get presentation object based on index (UID)
-        let deletedSpeaker: Speaker = this.speakers[index];
-        
-        // Attempt to delete given speaker in database
-        let dbDeleted = this.dbInterface.delete(deletedSpeaker);
+        // Flag to determine if the speaker was deleted
+        let deleted: boolean = false;
 
-        // If successfully deleted
-        if (dbDeleted) {
-            // Update speakers from database
-            this.speakers = this.dbInterface.fetch_all_speakers();
+        // Validate the index
+        if ( this.isValidIndex(index) ) {
+
+            // Get presentation object based on index (UID)
+            let deletedSpeaker: Speaker = this.speakers[index];
+            
+            // Attempt to delete given speaker in database
+            let dbDeleted = this.dbInterface.delete(deletedSpeaker);
+
+            // If successfully deleted
+            if (dbDeleted) {
+                // Update speakers from database
+                // Set deleted flag
+                this.speakers = this.dbInterface.fetch_all_speakers();
+                deleted = true;
+            }
         }
 
-        return dbDeleted;
+        return deleted;
     }
 
     /**
@@ -267,19 +285,28 @@ class UIInterface {
      */
     public deleteRoom(index: number): boolean{
 
-        // Get presentation object based on index (UID)
-        let deletedRoom: Room = this.rooms[index];
+        // Flag to determine if the room was deleted
+        let deleted: boolean = false;
 
-        // Attempt to delete given room in database
-        let dbDeleted = this.dbInterface.delete(deletedRoom);
+        // Validate the index
+        if ( this.isValidIndex(index) ) {
 
-        // If successfully deleted
-        if (dbDeleted) {
-            // Update room from database
-            this.rooms = this.dbInterface.fetch_all_rooms();
+            // Get presentation object based on index (UID)
+            let deletedRoom: Room = this.rooms[index];
+
+            // Attempt to delete given room in database
+            let dbDeleted = this.dbInterface.delete(deletedRoom);
+
+            // If successfully deleted
+            if (dbDeleted) {
+                // Update room from database
+                // Set deleted flag
+                this.rooms = this.dbInterface.fetch_all_rooms();
+                deleted = true;
+            }
         }
 
-        return dbDeleted;
+        return deleted;
     }
 
     /**
@@ -289,19 +316,44 @@ class UIInterface {
      */
     public deleteTime(index: number): boolean{
 
-        // Get presentation object based on index (UID)
-        let deletedTime: TimeSlot = this.timeSlots[index];
+        // Flag to determine if the time was deleted
+        let deleted: boolean = false;
 
-        // Delete the given timeslot in database
-        let dbDeleted = this.dbInterface.delete(deletedTime);
+        // Validate the index
+        if ( this.isValidIndex(index) ) {
 
-        // If successfully deleted
-        if (dbDeleted) {
-            // Update timeslots from database
-            this.timeSlots = this.dbInterface.fetch_all_time_slots();
+            // Get presentation object based on index (UID)
+            let deletedTime: TimeSlot = this.timeSlots[index];
+
+            // Delete the given timeslot in database
+            let dbDeleted = this.dbInterface.delete(deletedTime);
+
+            // If successfully deleted
+            if (dbDeleted) {
+                // Update timeslots from database
+                // Set deleted flag
+                this.timeSlots = this.dbInterface.fetch_all_time_slots();
+                deleted = true;
+            }
         }
         
-        return dbDeleted;
+        return deleted;
+    }
+
+    /**
+     * Makes sure testIndex is a non-negative integer
+     * 
+     * @param testIndex Index to test validity of
+     */
+    private isValidIndex(testIndex: number): boolean {
+        
+        // Verify if index is and integer
+        let isInteger: boolean = Number.isInteger(testIndex);
+
+        if( testIndex >= 0 && isInteger){
+            return true;
+        }
+        return false;
     }
 
 }
