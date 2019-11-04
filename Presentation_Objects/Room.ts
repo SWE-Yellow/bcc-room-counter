@@ -12,7 +12,7 @@ export class Room {
     }
 
     public getName(): string {
-        return roomName;
+        return this.roomName;
     }
 
     public setName(room: string): void{ 
@@ -21,7 +21,7 @@ export class Room {
 
 
     public getCapacity(): number {
-        return roomCapacity;
+        return this.roomCapacity;
     }
 
     public setCapacity(roomCapacity: number): void {
@@ -30,10 +30,10 @@ export class Room {
 
 
     public getId(): number{
-        return uid;
+        return this.uid;
     }
 
     public getStrings(): Array<string>{
-        return [roomName,String(roomCapacity)]; 
+        return [this.roomName, String(this.roomCapacity)]; 
     }
 }

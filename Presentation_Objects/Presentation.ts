@@ -11,7 +11,10 @@ import { TimeSlot } from "./TimeSlot";
     protected presentationId: number;
 
     protected constructor(topic: string, speaker: Speaker, time: TimeSlot, room: Room) {
-
+        this.topic = topic
+        this.speaker = speaker
+        this.time = time
+        this.room = room
     }
 
     public getTopic(): string {

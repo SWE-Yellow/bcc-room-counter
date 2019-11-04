@@ -14,7 +14,7 @@ export class Speaker {
     }
 
     public getFirstName(): string {
-        return firstName;
+        return this.firstName;
     }
 
     public setFirstName(first: string): void {
@@ -22,7 +22,7 @@ export class Speaker {
     }
 
     public getLastName(): string {
-        return lastName;
+        return this.lastName;
     }
 
     public setLastName(last: string): void {
@@ -31,7 +31,7 @@ export class Speaker {
 
 
     public getEmail(): string {
-        return email;
+        return this.email;
     }
     
     public setEmail(email: string): void {
@@ -40,10 +40,10 @@ export class Speaker {
 
 
     public getId(): number{
-        return uid;
+        return this.uid;
     }
 
     public getStrings(): Array<string>{
-        return [firstName, lastName, email];
+        return [this.firstName, this.lastName, this.email];
     }
 }

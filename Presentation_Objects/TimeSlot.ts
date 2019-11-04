@@ -11,7 +11,7 @@ export class TimeSlot{
     }
 
     public getStart(): Date{
-        return startTime;
+        return this.startTime;
     }
 
     public setStart(start: Date): void{
@@ -20,7 +20,7 @@ export class TimeSlot{
 
 
     public getEnd(): Date{
-        return endTime;
+        return this.endTime;
     }
 
     public setEnd(end: Date): void{
@@ -29,11 +29,11 @@ export class TimeSlot{
 
 
     public getId(): number{
-        return uid;
+        return this.uid;
     }
 
     public getStrings(): Array<string>{
-        return [String(startTime), String(endTime)];
+        return [String(this.startTime), String(this.endTime)];
     }
 
 }

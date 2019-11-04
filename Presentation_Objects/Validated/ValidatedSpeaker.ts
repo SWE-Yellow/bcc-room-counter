@@ -1,5 +1,5 @@
 import { Speaker } from "../Speaker";
-import { Validated } from "./Validated";
+import { Validated, Validator } from "./Validated";
 
 export class ValidatedSpeaker extends Speaker implements Validated{
 
@@ -7,7 +7,13 @@ export class ValidatedSpeaker extends Speaker implements Validated{
         super(uid, firstName, lastName, email);
     }
 
-    public validate(): boolean{
-        return null
+    public validate(): boolean {
+        if (!Validator.isStringValid(this.firstName))
+            return false
+        if (!Validator.isStringValid(this.lastName))
+            return false
+        if (!Validator.isStringValid(this.email))
+            return false
+        return true
     }
 }
