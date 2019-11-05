@@ -1,5 +1,5 @@
 import { TimeSlot } from "../TimeSlot";
-import { Validated } from "./Validated";
+import { Validated, Validator } from "./Validated";
 
 export class ValidatedTimeSlot extends TimeSlot implements Validated{
 
@@ -8,6 +8,11 @@ export class ValidatedTimeSlot extends TimeSlot implements Validated{
     }
 
     public validate(): boolean{
-        return null
+        //TODO: how do we want to validate year?
+        if (this.startTime.getFullYear() < 1970)
+            return false
+        if (this.endTime.getFullYear() < 1970)
+            return false
+        return true
     }
 }

@@ -4,36 +4,46 @@ export class Speaker {
     protected lastName: string;
     protected email: string;
 
-    protected constructor(firstName: string, lastName: string, email: string){
+
+    protected constructor(uid: number, firstName: string, lastName: string, email: string){
+        this.uid=uid;
+        this.firstName=firstName;
+        this.lastName=lastName;
+        this.email=email;
 
     }
 
     public getFirstName(): string {
-        return null
+        return this.firstName;
     }
 
-    public setFirstName(first: string): void {}
-
+    public setFirstName(first: string): void {
+        this.firstName=first;
+    }
 
     public getLastName(): string {
-        return null
+        return this.lastName;
     }
 
-    public setLastName(last: string): void {}
+    public setLastName(last: string): void {
+        this.lastName=last;
+    }
 
 
     public getEmail(): string {
-        return null
+        return this.email;
     }
     
-    public setEmail(email: string): void {}
+    public setEmail(email: string): void {
+        this.email=email;
+    }
 
 
     public getId(): number{
-        return null
+        return this.uid;
     }
 
     public getStrings(): Array<string>{
-        return null
+        return [this.firstName, this.lastName, this.email];
     }
 }
