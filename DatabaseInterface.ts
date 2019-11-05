@@ -267,23 +267,6 @@ export class DatabaseInterface {
       return d;
     }
 
-    private update(selected: TimeSlot): boolean {
-      this.connect();
-      let d: boolean = false;
-      let sql = "UPDATE TimeSlot SET endTime = '" + selected.getEnd() + "' AND startTime = '" + selected.getStart();
-      this.con.query(sql, function(err, result) {
-        if (err) throw err;
-        d = true;
-      });
-      this.disconnect();
-      return d;
-    }
-
-    private update(selected: any): boolean{
-        return null
-    }
-
-
     private checkExists(selected: Presentation): boolean;
     private checkExists(selected: Room): boolean;
     private checkExists(selected: Speaker): boolean;
