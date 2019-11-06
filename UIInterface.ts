@@ -8,7 +8,9 @@ import { ValidatedRoom } from "./Presentation_Objects/Validated/ValidatedRoom";
 import { ValidatedSpeaker } from "./Presentation_Objects/Validated/ValidatedSpeaker";
 import { ValidatedTimeSlot } from "./Presentation_Objects/Validated/ValidatedTimeSlot";
 
-import { DatabaseInterface } from "./DatabaseInterface";
+// import { DatabaseInterface } from "./DatabaseInterface";
+import DatabaseInterface from "./tests/mocks/DatabaseInterfaceMock";
+
 
 export default class UIInterface {
 
@@ -299,7 +301,7 @@ export default class UIInterface {
         let deleted: boolean = false;
 
         // Validate the index
-        if ( this.isValidIndex(index) ) {
+        if ( this.isValidIndex(index, this.presentations.length) ) {
         
             // Get presentation object based on index (UID)
             let deletedPresentation: Presentation = this.presentations[index];
@@ -330,7 +332,7 @@ export default class UIInterface {
         let deleted: boolean = false;
 
         // Validate the index
-        if ( this.isValidIndex(index) ) {
+        if ( this.isValidIndex(index, this.speakers.length) ) {
 
             // Get presentation object based on index (UID)
             let deletedSpeaker: Speaker = this.speakers[index];
@@ -361,7 +363,7 @@ export default class UIInterface {
         let deleted: boolean = false;
 
         // Validate the index
-        if ( this.isValidIndex(index) ) {
+        if ( this.isValidIndex(index, this.rooms.length) ) {
 
             // Get presentation object based on index (UID)
             let deletedRoom: Room = this.rooms[index];
@@ -392,7 +394,7 @@ export default class UIInterface {
         let deleted: boolean = false;
 
         // Validate the index
-        if ( this.isValidIndex(index) ) {
+        if ( this.isValidIndex(index, this.timeSlots.length) ) {
 
             // Get presentation object based on index (UID)
             let deletedTime: TimeSlot = this.timeSlots[index];
@@ -417,12 +419,13 @@ export default class UIInterface {
      * 
      * @param testIndex Index to test validity of
      */
-    private isValidIndex(testIndex: number): boolean {
+    private isValidIndex(testIndex: number, arrayLenth: number): boolean {
         
         // Verify if index is and integer
         let isInteger: boolean = Number.isInteger(testIndex);
 
-        if( testIndex >= 0 && isInteger){
+        // If is an integer and within bounds of the array
+        if( isInteger && testIndex >= 0 && testIndex < arrayLenth ){
             return true;
         }
         return false;

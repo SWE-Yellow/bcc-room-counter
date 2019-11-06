@@ -56,10 +56,10 @@ export default class DatabaseInterface {
     public delete(seleceted: any): boolean{
 
         if (Math.random() > 0.5) {
-            console.log("Expected: Pass");
+            console.log("\tExpected: Pass");
             return true;
         }
-        console.log("Expected: Fail");
+        console.log("\tExpected: Fail");
         return false;
     }
 

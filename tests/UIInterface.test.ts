@@ -16,78 +16,125 @@ console.log("///////////////////////////////////////");
 console.log("//           PRESENTATIONS           //");
 console.log("///////////////////////////////////////");
 
+console.log("Negative Index:\n");
+result = uiInterface.deletePresentation(-1) ? "Pass" : "Fail";
+console.log("\tExpected: Fail");
+console.log("\tActual:  ", result, "\n");
+
+console.log("Index > length:\n");
+result = uiInterface.deletePresentation(10) ? "Pass" : "Fail";
+console.log("\tExpected: Fail");
+console.log("\tActual:  ", result, "\n");
+
+console.log("With DatabaseInterface Mock:\n");
 result = uiInterface.deletePresentation(0) ? "Pass" : "Fail";
-console.log("Actual:  ", result, "\n");
+console.log("\tActual:  ", result, "\n");
 
 result = uiInterface.deletePresentation(0) ? "Pass" : "Fail";
-console.log("Actual:  ", result, "\n");
+console.log("\tActual:  ", result, "\n");
 
 result = uiInterface.deletePresentation(0) ? "Pass" : "Fail";
-console.log("Actual:  ", result, "\n");
+console.log("\tActual:  ", result, "\n");
 
 result = uiInterface.deletePresentation(0) ? "Pass" : "Fail";
-console.log("Actual:  ", result, "\n");
+console.log("\tActual:  ", result, "\n");
 
 result = uiInterface.deletePresentation(0) ? "Pass" : "Fail";
-console.log("Actual:  ", result, "\n");
+console.log("\tActual:  ", result, "\n");
 
 
+console.log("\n");
 console.log("///////////////////////////////////////");
 console.log("//               ROOMS               //");
 console.log("///////////////////////////////////////");
 
+console.log("Negative Index:\n");
+result = uiInterface.deleteRoom(-1) ? "Pass" : "Fail";
+console.log("\tExpected: Fail");
+console.log("\tActual:  ", result, "\n");
+
+console.log("Index > length:\n");
+result = uiInterface.deleteRoom(10) ? "Pass" : "Fail";
+console.log("\tExpected: Fail");
+console.log("\tActual:  ", result, "\n");
+
+console.log("With DatabaseInterface Mock:\n");
 result = uiInterface.deleteRoom(0) ? "Pass" : "Fail";
-console.log("Actual:  ", result, "\n");
+console.log("\tActual:  ", result, "\n");
 
 result = uiInterface.deleteRoom(0) ? "Pass" : "Fail";
-console.log("Actual:  ", result, "\n");
+console.log("\tActual:  ", result, "\n");
 
 result = uiInterface.deleteRoom(0) ? "Pass" : "Fail";
-console.log("Actual:  ", result, "\n");
+console.log("\tActual:  ", result, "\n");
 
 result = uiInterface.deleteRoom(0) ? "Pass" : "Fail";
-console.log("Actual:  ", result, "\n");
+console.log("\tActual:  ", result, "\n");
 
 result = uiInterface.deleteRoom(0) ? "Pass" : "Fail";
-console.log("Actual:  ", result, "\n");
+console.log("\tActual:  ", result, "\n");
 
 
+console.log("\n");
 console.log("///////////////////////////////////////");
 console.log("//             SPEAKERS              //");
 console.log("///////////////////////////////////////");
 
+console.log("Negative Index:\n");
+result = uiInterface.deleteSpeaker(-1) ? "Pass" : "Fail";
+console.log("\tExpected: Fail");
+console.log("\tActual:  ", result, "\n");
+
+console.log("Index > length:\n");
+result = uiInterface.deleteSpeaker(10) ? "Pass" : "Fail";
+console.log("\tExpected: Fail");
+console.log("\tActual:  ", result, "\n");
+
+console.log("With DatabaseInterface Mock:\n");
 result = uiInterface.deleteSpeaker(0) ? "Pass" : "Fail";
-console.log("Actual:  ", result, "\n");
+console.log("\tActual:  ", result, "\n");
 
 result = uiInterface.deleteSpeaker(0) ? "Pass" : "Fail";
-console.log("Actual:  ", result, "\n");
+console.log("\tActual:  ", result, "\n");
 
 result = uiInterface.deleteSpeaker(0) ? "Pass" : "Fail";
-console.log("Actual:  ", result, "\n");
+console.log("\tActual:  ", result, "\n");
 
 result = uiInterface.deleteSpeaker(0) ? "Pass" : "Fail";
-console.log("Actual:  ", result, "\n");
+console.log("\tActual:  ", result, "\n");
 
 result = uiInterface.deleteSpeaker(0) ? "Pass" : "Fail";
-console.log("Actual:  ", result, "\n");
+console.log("\tActual:  ", result, "\n");
 
 
+console.log("\n");
 console.log("///////////////////////////////////////");
 console.log("//               TIMES               //");
 console.log("///////////////////////////////////////");
 
+console.log("Negative Index:\n");
+result = uiInterface.deleteTime(-1) ? "Pass" : "Fail";
+console.log("\tExpected: Fail");
+console.log("\tActual:  ", result, "\n");
+
+console.log("Index > length:\n");
+result = uiInterface.deleteTime(10) ? "Pass" : "Fail";
+console.log("\tExpected: Fail");
+console.log("\tActual:  ", result, "\n");
+
+console.log("With DatabaseInterface Mock:\n");
 result = uiInterface.deleteTime(0) ? "Pass" : "Fail";
-console.log("Actual:  ", result, "\n");
+console.log("\tActual:  ", result, "\n");
 
 result = uiInterface.deleteTime(0) ? "Pass" : "Fail";
-console.log("Actual:  ", result, "\n");
+console.log("\tActual:  ", result, "\n");
 
 result = uiInterface.deleteTime(0) ? "Pass" : "Fail";
-console.log("Actual:  ", result, "\n");
+console.log("\tActual:  ", result, "\n");
 
 result = uiInterface.deleteTime(0) ? "Pass" : "Fail";
-console.log("Actual:  ", result, "\n");
+console.log("\tActual:  ", result, "\n");
 
 result = uiInterface.deleteTime(0) ? "Pass" : "Fail";
-console.log("Actual:  ", result, "\n");
+console.log("\tActual:  ", result, "\n");
 
