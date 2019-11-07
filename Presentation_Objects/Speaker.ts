@@ -1,5 +1,6 @@
 export class Speaker {
 
+    protected uid: number;
     protected firstName: string;
     protected lastName: string;
     protected email: string;
