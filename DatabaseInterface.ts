@@ -9,6 +9,8 @@ import { ValidatedSpeaker } from "./Presentation_Objects/Validated/ValidatedSpea
 import { ValidatedTimeSlot } from "./Presentation_Objects/Validated/ValidatedTimeSlot";
 import { Validated } from "./Presentation_Objects/Validated/Validated";
 
+var mysql:any = require("mysql");
+
 export class DatabaseInterface {
 
     public con: any;
