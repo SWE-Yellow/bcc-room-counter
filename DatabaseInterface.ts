@@ -23,7 +23,6 @@ export class DatabaseInterface {
 
     private connect(): void {
       //ALTER USER 'root'@'localhost' IDENTIFIED WITH mysql_native_password BY 'password'; <-- Use this to solve Client Auth ERROR.
-      let mysql = require('mysql');
 
       this.con = mysql.createConnection({
         host: this.HOST,
