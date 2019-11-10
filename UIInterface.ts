@@ -13,7 +13,6 @@ import DatabaseInterface from "./tests/mocks/DatabaseInterfaceMock";
 
 
 export default class UIInterface {
-
     private presentations: Array<Presentation>;
     private rooms: Array<Room>;
     private speakers: Array<Speaker>;
@@ -25,9 +24,13 @@ export default class UIInterface {
      * @param username username for logging in
      * @param password passwd for logging in
      */
-    constructor(username: String, password: String){
-        //Instantiate Database interface
-        this.dbInterface = new DatabaseInterface()
+    constructor(username: String, password: String, dbInt?:DatabaseInterface){
+        if(dbInt){
+            this.dbInterface = dbInt
+        }else{
+            //Instantiate Database interface
+            this.dbInterface = new DatabaseInterface()
+        }
 
         //Fetch rooms from database to populate arrays
         this.presentations = this.dbInterface.fetch_all_presentations()
@@ -39,13 +42,28 @@ export default class UIInterface {
     /**
      * Save a presentation to the database
      * 
+     * @param index index in the array sent by calling fetch
      * @param topic string value for the presentation topic
      * @param roomId roomId number in database
      * @param speakerId speakerId number in database
      * @param timeId timeslotId number in database
      */
-    public savePresntation(index: number): boolean{
-        let currentPresentation = this.presentations[index]
+    public savePresentation(index: number, topic:string, roomId:number, speakerId:number, timeId:number): boolean{
+        let currentPresentation;
+
+        if(this.isValidIndex(index, this.presentations.length)){
+            currentPresentation = this.presentations[index]
+            if(!this.deletePresentation(index)){
+                return false;
+            }
+        }else{
+            currentPresentation = new ValidatedPresentation("", null, null, null)
+        }
+
+        currentPresentation.setTopic(topic);
+        currentPresentation.setRoom(this.rooms[roomId]);
+        currentPresentation.setSpeaker(this.speakers[speakerId]);
+        currentPresentation.setTime(this.timeSlots[timeId]);
 
         let status = this.dbInterface.save(currentPresentation)
 
@@ -59,12 +77,26 @@ export default class UIInterface {
     /**
      * Save a speaker to the database
      * 
+     * @param index index in the array sent by calling fetch
      * @param first String for first name
      * @param last String for surname
      * @param email String for email uid
      */
-    public saveSpeaker(index: number): boolean{
-        let currentSpeaker = this.speakers[index]
+    public saveSpeaker(index: number, first:string, last:string, email:string): boolean{
+        var currentSpeaker;
+
+        if(this.isValidIndex(index, this.speakers.length)){
+            currentSpeaker = this.speakers[index]
+            if(!this.deleteSpeaker(index)){
+                return false;
+            }
+        }else{
+            currentSpeaker = new ValidatedSpeaker( "", "", "");
+        }
+
+        currentSpeaker.setFirstName(first);
+        currentSpeaker.setLastName(last);
+        currentSpeaker.setEmail(email);
 
         let status = this.dbInterface.save(currentSpeaker)
 
@@ -78,11 +110,25 @@ export default class UIInterface {
     /**
      * Save a room to the database
      * 
+     * @param index index in the array sent by calling fetch
      * @param room name of the room
      * @param capacity capacity of the room
      */
-    public saveRoom(index: number): boolean{
-        let currentRoom = this.rooms[index]
+    public saveRoom(index: number, name:string, capacity:number): boolean{
+        let currentRoom;
+
+        if(this.isValidIndex(index, this.rooms.length)){
+            currentRoom = this.rooms[index];
+
+            if(!this.deleteRoom(index)){
+                return false;
+            }
+        }else{
+            currentRoom = new ValidatedRoom(null, null);
+        }
+
+        currentRoom.setName(name);
+        currentRoom.setCapacity(capacity);
 
         let status = this.dbInterface.save(currentRoom)
 
@@ -96,11 +142,25 @@ export default class UIInterface {
     /**
      * Save a time to the database
      * 
+     * @param index index in the array sent by calling fetch
      * @param startTime start of the time slot
      * @param endTime end of the time slot
      */
-    public saveTime(index: number): boolean{
-        let current_time = this.timeSlots[index]
+    public saveTime(index: number, startTime:Date, endTime:Date): boolean{
+        let current_time;
+
+        if(this.isValidIndex(index, this.timeSlots.length)){
+            current_time = this.timeSlots[index]
+            if(!this.deleteTime(index)){
+                return false;
+            }
+        }else{
+            current_time = new ValidatedTimeSlot(null, null, null);
+        }
+
+        current_time.setStart(startTime);
+        current_time.setEnd(endTime);
+
 
         let status = this.dbInterface.save(current_time)
 
@@ -111,82 +171,6 @@ export default class UIInterface {
         return status
     }
 
-    /**
-     * Add new presentation to the database
-     * 
-     * @param topic string topic value
-     * @param roomId uid of room object
-     * @param speakerId uid of speaker object
-     * @param timeId uid of topic object
-     */
-    public addPresentation(topic: string, roomId:number, speakerId:number, timeId:number): boolean{
-        let currentPresentation = new ValidatedPresentation(topic, this.speakers[speakerId], this.timeSlots[timeId], this.rooms[roomId])
-
-        let status = this.dbInterface.save(currentPresentation)
-
-        if(status){
-            this.presentations = this.dbInterface.fetch_all_presentations()
-        }
-
-        return status
-    }
-
-    /**
-     * Add new speaker object to the database
-     *  
-     * @param first string first name
-     * @param last string last name
-     * @param email string email
-     */
-    public addSpeaker(first:string, last:string, email:string): boolean{
-        let currentSpeaker = new ValidatedSpeaker(name, last, email)
-
-        let status = this.dbInterface.save(currentSpeaker)
-
-        if(status){
-            this.speakers = this.dbInterface.fetch_all_speakers()
-        }
-
-        return status
-    }
-
-    /**
-     * Add new room to database
-     * 
-     * @param name string room name 
-     * @param capacity capacity of the room
-     */
-    public addRoom(name:string, capacity:number): boolean{
-        let currentRoom = new ValidatedRoom(name, capacity)
-
-        let status = this.dbInterface.save(currentRoom)
-
-        if(status){
-            this.rooms = this.dbInterface.fetch_all_rooms()
-        }
-
-        return status
-    }
-
-    /**
-     * Add new time to database
-     * 
-     * @param start Start value as a parsable string
-     * @param end end value as a parsable string
-     */
-    public addTime(start:string, end:string): boolean{
-        //How do we figure out the right uid for this object???
-        let current_time = new ValidatedTimeSlot(-1, new Date(Date.parse(start)), new Date(Date.parse(end)))
-
-        let status = this.dbInterface.save(current_time)
-
-        if(status){
-            this.timeSlots = this.dbInterface.fetch_all_time_slots()
-        }
-
-        return status
-    }
-    
     /**
      * Returns a map of presentations from the database
      */

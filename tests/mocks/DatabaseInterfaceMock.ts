@@ -15,10 +15,13 @@ export default class DatabaseInterface {
     private DATABASE_NAME: string =    "insert db name";
     private LINK: String =             "insert link";
 
+    public numSave:number = 0;
+
     constructor(){}
 
     private connect(): void {}
     private disconnect(): void{}
+
 
 
     public save(selected: Presentation): boolean;
@@ -27,6 +30,73 @@ export default class DatabaseInterface {
     public save(selected: TimeSlot): boolean;
 
     public save(selected: any): boolean{
+        this.numSave ++
+
+        switch(selected.constructor){
+            case ValidatedPresentation: {
+                if(this.numSave == 1){
+                    if(selected.getTopic() == "TestTopic1"){
+                        return true;
+                    }
+                }
+
+                if(this.numSave == 2){
+                    if(selected.getTopic() == ""){
+                        return true;
+                    }
+                }
+
+                return false;
+
+                break;
+            }
+            case ValidatedRoom:{
+                if(this.numSave == 1){
+                    if(selected.getName() == "TestRoom1"){
+                        return true;
+                    }
+                }
+
+                if(this.numSave == 2){
+                    if(selected.getName() == ""){
+                        return true;
+                    }
+                }
+
+                break;
+            }
+
+            case ValidatedSpeaker:{
+                if(this.numSave == 1){
+                    if(selected.getFirstName() == "Name"){
+                        return true;
+                    }
+                }
+
+                if(this.numSave == 2){
+                    if(selected.getFirstName() == ""){
+                        return true;
+                    }
+                }
+
+                break;
+            }
+            case ValidatedTimeSlot:{
+                if(this.numSave == 1){
+                    if(selected.getStart().getTime() == new Date(0).getTime()){
+                        return true;
+                    }
+                }
+
+                if(this.numSave == 2){
+                    if(selected.getStart().getTime() == new Date(5).getTime()){
+                        return true;
+                    }
+                }
+
+                break;
+            }
+        }
         return null;
     }
 

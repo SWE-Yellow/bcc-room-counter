@@ -4,7 +4,7 @@ import { Validated, Validator } from "./Validated";
 export class ValidatedSpeaker extends Speaker implements Validated{
 
     constructor(firstName: string, lastName: string, email: string){
-        super(firstName, lastName, email);
+        super(-1, firstName, lastName, email);
     }
 
     public validate(): boolean {
