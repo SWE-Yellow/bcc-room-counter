@@ -1,0 +1,23 @@
+{
+  "name": "bcc-room-counter",
+  "version": "1.0.0",
+  "description": "- [ ] Make more formal procedure for flow of program\r - [ ] Write Mock for after UI interface \r - [ ] Write Mock for after DB interface\r - [ ] Finish Coding UI Interface\r - [ ] Finish Coding DB Interface",
+  "main": "DatabaseMock.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/SWE-Yellow/bcc-room-counter.git"
+  },
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/SWE-Yellow/bcc-room-counter/issues"
+  },
+  "homepage": "https://github.com/SWE-Yellow/bcc-room-counter#readme",
+  "dependencies": {
+    "@types/node": "^12.12.6",
+    "mysql": "^2.17.1"
+  }
+}

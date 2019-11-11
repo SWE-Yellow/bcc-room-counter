@@ -3,8 +3,9 @@ import { Validated, Validator } from "./Validated";
 
 export class ValidatedSpeaker extends Speaker implements Validated{
 
-    constructor(firstName: string, lastName: string, email: string){
-        super(-1, firstName, lastName, email);
+    constructor(uid: any, firstName: string, lastName: string, email: string){
+        super(uid, firstName, lastName, email);
+
     }
 
     public validate(): boolean {
