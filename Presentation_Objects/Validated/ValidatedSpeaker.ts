@@ -5,6 +5,7 @@ export class ValidatedSpeaker extends Speaker implements Validated{
 
     constructor(uid: any, firstName: string, lastName: string, email: string){
         super(uid, firstName, lastName, email);
+
     }
 
     public validate(): boolean {
