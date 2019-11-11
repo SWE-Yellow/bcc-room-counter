@@ -102,7 +102,7 @@ export default class DatabaseInterface {
 
 
     public fetch_all_presentations(): Array<Presentation>{
-        return [new ValidatedPresentation("", new ValidatedSpeaker("", "", ""), new ValidatedTimeSlot(0, new Date(0), new Date(0)), new ValidatedRoom("", 0))];
+        return [new ValidatedPresentation("", new ValidatedSpeaker(-1, "", "", ""), new ValidatedTimeSlot(0, new Date(0), new Date(0)), new ValidatedRoom("", 0))];
     }
 
     public fetch_all_rooms(): Array<Room>{
@@ -110,7 +110,7 @@ export default class DatabaseInterface {
     }
 
     public fetch_all_speakers(): Array<Speaker>{
-        return [new ValidatedSpeaker("", "", "")];
+        return [new ValidatedSpeaker(-1, "", "", "")];
     }
 
     public fetch_all_time_slots(): Array<TimeSlot>{

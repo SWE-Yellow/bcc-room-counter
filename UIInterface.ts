@@ -91,7 +91,7 @@ export default class UIInterface {
                 return false;
             }
         }else{
-            currentSpeaker = new ValidatedSpeaker( "", "", "");
+            currentSpeaker = new ValidatedSpeaker(index, "", "", "");
         }
 
         currentSpeaker.setFirstName(first);
