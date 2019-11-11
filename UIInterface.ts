@@ -8,8 +8,8 @@ import { ValidatedRoom } from "./Presentation_Objects/Validated/ValidatedRoom";
 import { ValidatedSpeaker } from "./Presentation_Objects/Validated/ValidatedSpeaker";
 import { ValidatedTimeSlot } from "./Presentation_Objects/Validated/ValidatedTimeSlot";
 
-// import { DatabaseInterface } from "./DatabaseInterface";
-import DatabaseInterface from "./tests/mocks/DatabaseInterfaceMock";
+import { DatabaseInterface } from "./DatabaseInterface";
+// import DatabaseInterface from "./tests/mocks/DatabaseInterfaceMock";
 
 
 export default class UIInterface {
@@ -21,10 +21,10 @@ export default class UIInterface {
 
     /**
      * Main Constructor
-     * @param username username for logging in
-     * @param password passwd for logging in
+     * 
+     * @param dbInt optional for testing purposes
      */
-    constructor(username: String, password: String, dbInt?:DatabaseInterface){
+    constructor(dbInt?:DatabaseInterface){
         if(dbInt){
             this.dbInterface = dbInt
         }else{

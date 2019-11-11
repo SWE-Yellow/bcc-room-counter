@@ -1,8 +1,8 @@
 # bcc-room-counter
 
 ## TO DO
-- [ ] Make more formal procedure for flow of program
-- [ ] Write Mock for after UI interface 
+- [X] Make more formal procedure for flow of program
+- [X] Write Mock for after UI interface 
 - [ ] Write Mock for after DB interface
-- [ ] Finish Coding UI Interface
-- [ ] Finish Coding DB Interface
+- [X] Finish Coding UI Interface
+- [X] Finish Coding DB Interface

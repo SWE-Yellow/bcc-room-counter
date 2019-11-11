@@ -70,12 +70,12 @@ export class DatabaseInterface {
       //this.con.destroy();
     }
 
-    public save(selected: ValidatedPresentation | ValidatedRoom | ValidatedSpeaker | ValidatedTimeSlot): boolean {
+    public save(selected: Presentation | Room | Speaker | TimeSlot): boolean {
       this.connect();
 
       let save: boolean = false;
 
-      if (selected instanceof ValidatedPresentation) {
+      if (selected instanceof Presentation) {
         this.con.query({
           sql: 'INSERT INTO Presentation SET idSpeech = ?, presentationSpeaker = ?, presentationRoom = ?, presentationTimeSlot = ?, topic = ?',
           timeout: 40000,
@@ -86,7 +86,7 @@ export class DatabaseInterface {
           save = true;
         });
 
-      } else if (selected instanceof ValidatedRoom) {
+      } else if (selected instanceof Room) {
         this.con.query({
           sql: 'INSERT INTO Room SET idRoom = ?, roomName = ?, roomCapacity = ?',
           timeout: 40000,
@@ -96,7 +96,7 @@ export class DatabaseInterface {
           save = true;
         });
 
-      } else if(selected instanceof ValidatedSpeaker) {
+      } else if(selected instanceof Speaker) {
         this.con.query({
           sql: 'INSERT INTO Speaker SET idSpeaker = ?, speakerFIrstName = ?, speakerEmail = ?, speakerLastName = ?',
           timeout: 40000,
@@ -106,7 +106,7 @@ export class DatabaseInterface {
           save = true;
         });
 
-      } else if(selected instanceof ValidatedTimeSlot) {
+      } else if(selected instanceof TimeSlot) {
         this.con.query({
           sql: 'INSERT INTO TimeSlot SET idTimeSlot = ?, endTime = ?, startTime = ?',
           timeout: 40000,
@@ -155,7 +155,7 @@ export class DatabaseInterface {
         return res;
     }
 
-    public fetch_all_time_slot(): Array<TimeSlot>{
+    public fetch_all_time_slots(): Array<TimeSlot>{
       this.connect();
       let res: Array<TimeSlot> = [];
       this.con.query("SELECT * FROM TimeSlot", function(err, result, fields) {
@@ -166,12 +166,12 @@ export class DatabaseInterface {
         return res;
     }
 
-    public delete(selected: ValidatedPresentation | ValidatedRoom | ValidatedPresentation | ValidatedTimeSlot): boolean {
+    public delete(selected: Presentation | Room | Speaker | TimeSlot): boolean {
       this.connect();
 
       let d: boolean = false;
 
-      if (selected instanceof ValidatedPresentation) {
+      if (selected instanceof Presentation) {
         this.con.query({
           sql: 'DELETE FROM Presentation WHERE idSpeech = ?',
           timeout: 40000,
@@ -181,7 +181,7 @@ export class DatabaseInterface {
           d = true;
         });
 
-      } else if (selected instanceof ValidatedRoom) {
+      } else if (selected instanceof Room) {
         this.con.query({
           sql: 'DELETE FROM Room WHERE idRoom = ?',
           timeout: 40000,
@@ -191,7 +191,7 @@ export class DatabaseInterface {
           d = true;
         });
 
-      } else if (selected instanceof ValidatedSpeaker) {
+      } else if (selected instanceof Speaker) {
         this.con.query({
           sql: 'DELETE FROM Speaker WHERE idSpeaker = ?',
           timeout: 40000,
@@ -201,7 +201,7 @@ export class DatabaseInterface {
           d = true;
         });
 
-      } else if (selected instanceof ValidatedTimeSlot) {
+      } else if (selected instanceof TimeSlot) {
         this.con.query({
           sql: 'DELETE FROM TimeSlot WHERE idTimeSlot = ?',
           timeout: 40000,
