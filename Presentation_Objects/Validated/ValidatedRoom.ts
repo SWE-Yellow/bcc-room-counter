@@ -3,8 +3,8 @@ import { Validated, Validator } from "./Validated";
 
 export class ValidatedRoom extends Room implements Validated{
 
-    constructor(roomName: string, roomCapacity: number){
-        super(roomName, roomCapacity);
+    constructor(uid: number, roomName: string, roomCapacity: number){
+        super(uid, roomName, roomCapacity);
     }
 
     public validate(): boolean{

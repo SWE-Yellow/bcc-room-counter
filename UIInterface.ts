@@ -124,7 +124,7 @@ export default class UIInterface {
                 return false;
             }
         }else{
-            currentRoom = new ValidatedRoom(null, null);
+            currentRoom = new ValidatedRoom(null, null, null);
         }
 
         currentRoom.setName(name);

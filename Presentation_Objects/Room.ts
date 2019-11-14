@@ -5,10 +5,10 @@ export class Room {
     protected roomCapacity: number;
     
     
-    protected constructor(roomName: string, roomCapacity: number) {
+    protected constructor(uid: number, roomName: string, roomCapacity: number) {
+        this.uid = uid
         this.roomName = roomName;
-        this.roomCapacity = roomCapacity;
-        
+        this.roomCapacity = roomCapacity;      
     }
 
     public getName(): string {
