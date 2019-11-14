@@ -9,15 +9,23 @@ import { ValidatedSpeaker } from "./Presentation_Objects/Validated/ValidatedSpea
 import { ValidatedTimeSlot } from "./Presentation_Objects/Validated/ValidatedTimeSlot";
 import { Validated } from "./Presentation_Objects/Validated/Validated";
 
+import { Database } from "./Database";
+
 var mysql:any = require("mysql");
+var desync:any = require("deasync");
 
 export class DatabaseInterface {
 
+    wait:boolean = false;
+
     public con: any;
+    private db:Database;
+  
+    // private pool: any;
 
     //testing this.configs
     private readonly USERNAME: string =         "root";
-    private readonly PASSWORD: string =         "password";
+    private readonly PASSWORD: string =         "";
     private readonly DATABASE_NAME: string =    "mydb";
     private readonly HOST: string =             "localhost";
 
@@ -26,19 +34,28 @@ export class DatabaseInterface {
     private connect(): void {
       //ALTER USER 'root'@'localhost' IDENTIFIED WITH mysql_native_password BY 'password'; <-- Use this to solve Client Auth ERROR.
 
+      // this.db = new Database({
+      //     host: this.HOST,
+      //     user: this.USERNAME,
+      //     password: this.PASSWORD,
+      //     database: this.DATABASE_NAME
+      //   })
+
+
       this.con = mysql.createConnection({
         host: this.HOST,
         user: this.USERNAME,
         password: this.PASSWORD,
         database: this.DATABASE_NAME
       });
-      this.con.connect(function(err) {
-        if(err) throw err;
-        //this.console.log("connected");
-      });
+
+      // this.con.connect(function(err) {
+      //   if(err) throw err;
+      //   //this.console.log("connected");
+      // });
 
       /* Pool
-      this.con = mysql.createPool({
+      this.pool = mysql.createPool({
         host:       this.HOST,
         user:       this.USERNAME,
         password:   this.PASSWORD,
@@ -64,10 +81,12 @@ export class DatabaseInterface {
     }
 
     private disconnect(): void{
+      // this.db.close()
+
       this.con.end(function(err) {
         if(err) throw err;
       });
-      //this.con.destroy();
+      this.con.destroy();
     }
 
     public save(selected: ValidatedPresentation | ValidatedRoom | ValidatedSpeaker | ValidatedTimeSlot): boolean {
@@ -75,49 +94,89 @@ export class DatabaseInterface {
 
       let save: boolean = false;
 
-      if (selected instanceof ValidatedPresentation) {
-        this.con.query({
-          sql: 'INSERT INTO Presentation SET idSpeech = ?, presentationSpeaker = ?, presentationRoom = ?, presentationTimeSlot = ?, topic = ?',
-          timeout: 40000,
-          values: [selected.getPresentationId(), selected.getSpeaker(), selected.getRoom(), selected.getTime(), selected.getTopic()]
+      if (selected instanceof Presentation) {
+        // await this.con.query({
+        //   sql: 'INSERT INTO Presentation SET idSpeech = ?, presentationSpeaker = ?, presentationRoom = ?, presentationTimeSlot = ?, topic = ?',
+        //   timeout: 40000,
+        //   values: [selected.getPresentationId(), selected.getSpeaker(), selected.getRoom(), selected.getTime(), selected.getTopic()]
 
-        }, function(err, result, fields) {
-          if(err) throw err;
-          save = true;
-        });
+        // }, function(err, result, fields) {
+        //   if(err) {
+        //     throw err;
+        //   }else{
+        //     save = true;
+        //     return save
+        //   }
+        // })
 
-      } else if (selected instanceof ValidatedRoom) {
-        this.con.query({
+
+
+      } else if (selected instanceof Room) {
+          // this.wait = true;
+          // this.db.insert({
+          //     sql: 'INSERT INTO Room SET idRoom = ?, roomName = ?, roomCapacity = ?',
+          //     timeout: 40000,
+          //     values: [selected.getId(), selected.getName(), selected.getCapacity()]
+          //   }).then(rows =>{
+          //     console.log("IN PROMISE")
+          //     save = true;
+          //     this.wait = false;
+          //   })
+
+
+        var query = desync(this.con.query);
+        query({
           sql: 'INSERT INTO Room SET idRoom = ?, roomName = ?, roomCapacity = ?',
           timeout: 40000,
           values: [selected.getId(), selected.getName(), selected.getCapacity()]
         }, function(err, result, fields) {
-          if(err) throw err;
-          save = true;
+          if(err) {
+            throw err;
+            console.log("ERROR");
+          }else{
+            console.log("NO ERROR")
+            save = true;
+            return save;
+          }
         });
 
-      } else if(selected instanceof ValidatedSpeaker) {
-        this.con.query({
-          sql: 'INSERT INTO Speaker SET idSpeaker = ?, speakerFIrstName = ?, speakerEmail = ?, speakerLastName = ?',
-          timeout: 40000,
-          values: [selected.getId(), selected.getFirstName(), selected.getEmail(), selected.getLastName()]
-        }, function(err, result, fields) {
-          if(err) throw err;
-          save = true;
-        });
+      } else if(selected instanceof Speaker) {
+        // await this.con.query({
+        //   sql: 'INSERT INTO Speaker SET idSpeaker = ?, speakerFIrstName = ?, speakerEmail = ?, speakerLastName = ?',
+        //   timeout: 40000,
+        //   values: [selected.getId(), selected.getFirstName(), selected.getEmail(), selected.getLastName()]
+        // }, function(err, result, fields) {
+        //   if(err) {
+        //     throw err;
+        //   }else{
+        //     save = true;
+        //     return save;
+        //   }
+        // });
 
-      } else if(selected instanceof ValidatedTimeSlot) {
-        this.con.query({
-          sql: 'INSERT INTO TimeSlot SET idTimeSlot = ?, endTime = ?, startTime = ?',
-          timeout: 40000,
-          values: [selected.getId(), selected.getEnd(), selected.getStart()]
-        }, function(err, result, fields) {
-          if(err) throw err;
-          save = true;
-        });
+      } else if(selected instanceof TimeSlot) {
+        // await this.con.query({
+        //   sql: 'INSERT INTO TimeSlot SET idTimeSlot = ?, endTime = ?, startTime = ?',
+        //   timeout: 40000,
+        //   values: [selected.getId(), selected.getEnd(), selected.getStart()]
+        // }, function(err, result, fields) {
+        //   if(err) {
+        //     throw err;
+        //   }else{
+        //     save = true;
+        //     return save;
+        //   }
+        // });
 
       }
 
+      // while(this.wait){
+      //   if(save){
+      //     console.log(save)
+      //   }
+      // }
+
+      console.log("OUT OF PROMISE");
       this.disconnect();
       return save;
     }
@@ -128,6 +187,7 @@ export class DatabaseInterface {
       this.con.query("SELECT * FROM Presentation", function(err, result, fields) {
         if(err) throw err;
         res = result;
+        console.log(res);
       });
       this.disconnect();
       return res;
@@ -139,6 +199,7 @@ export class DatabaseInterface {
       this.con.query("SELECT * FROM Room", function(err, result, fields) {
         if(err) throw err;
         res = result;
+        console.log(res);
       });
       this.disconnect();
         return res;
@@ -150,6 +211,7 @@ export class DatabaseInterface {
       this.con.query("SELECT * FROM Speaker", function(err, result, fields) {
         if(err) throw err;
         res = result;
+        console.log(res);
       });
       this.disconnect();
         return res;
@@ -161,6 +223,7 @@ export class DatabaseInterface {
       this.con.query("SELECT * FROM TimeSlot", function(err, result, fields) {
         if(err) throw err;
         res = result;
+        console.log(res);
       });
       this.disconnect();
         return res;
@@ -276,5 +339,9 @@ export class DatabaseInterface {
     private checkExists(selected: any): boolean{
         return null
     }
+
+    private delay(ms: number) {
+      return new Promise( resolve => setTimeout(resolve, ms) );
+  }
 
 }

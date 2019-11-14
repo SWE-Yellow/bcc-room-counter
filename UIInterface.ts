@@ -91,7 +91,7 @@ export default class UIInterface {
                 return false;
             }
         }else{
-            currentSpeaker = new ValidatedSpeaker( "", "", "");
+            currentSpeaker = new ValidatedSpeaker(-1, "", "", "");
         }
 
         currentSpeaker.setFirstName(first);
@@ -147,22 +147,22 @@ export default class UIInterface {
      * @param endTime end of the time slot
      */
     public saveTime(index: number, startTime:Date, endTime:Date): boolean{
-        let current_time;
+        let currentTime;
 
         if(this.isValidIndex(index, this.timeSlots.length)){
-            current_time = this.timeSlots[index]
+            currentTime = this.timeSlots[index]
             if(!this.deleteTime(index)){
                 return false;
             }
         }else{
-            current_time = new ValidatedTimeSlot(null, null, null);
+            currentTime = new ValidatedTimeSlot(null, null, null);
         }
 
-        current_time.setStart(startTime);
-        current_time.setEnd(endTime);
+        currentTime.setStart(startTime);
+        currentTime.setEnd(endTime);
 
 
-        let status = this.dbInterface.save(current_time)
+        let status = this.dbInterface.save(currentTime)
 
         if(status){
             this.timeSlots = this.dbInterface.fetch_all_time_slots()

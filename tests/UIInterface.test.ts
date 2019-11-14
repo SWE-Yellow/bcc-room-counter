@@ -6,7 +6,7 @@ import { Presentation } from '../Presentation_Objects/Presentation';
 
 let dbInt = new DatabaseInterface();
 
-let uiInterface: UIInterface = new UIInterface("", "", dbInt);
+let uiInterface: UIInterface = new UIInterface();
 let result: string;
 
 /*
