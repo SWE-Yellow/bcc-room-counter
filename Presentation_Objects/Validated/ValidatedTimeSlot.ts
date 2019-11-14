@@ -8,11 +8,6 @@ export class ValidatedTimeSlot extends TimeSlot implements Validated{
     }
 
     public validate(): boolean{
-        //TODO: how do we want to validate year?
-        if (this.startTime.getFullYear() < 1970)
-            return false
-        if (this.endTime.getFullYear() < 1970)
-            return false
-        return true
+        return this.startTime < this.endTime
     }
 }

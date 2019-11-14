@@ -11,9 +11,6 @@ export class ValidatedPresentation extends Presentation implements Validated{
     }
 
     public validate(): boolean{
-        if (Validator.isStringValid(this.topic))
-            return false
-        //TODO: What else do we validate here?
-        return true
+        return Validator.isStringValid(this.topic)
     }
 }

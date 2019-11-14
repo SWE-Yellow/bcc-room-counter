@@ -3,7 +3,7 @@ import { Validated, Validator } from "./Validated";
 
 export class ValidatedSpeaker extends Speaker implements Validated{
 
-    constructor(uid: any, firstName: string, lastName: string, email: string){
+    constructor(uid: number, firstName: string, lastName: string, email: string){
         super(uid, firstName, lastName, email);
 
     }
@@ -13,7 +13,7 @@ export class ValidatedSpeaker extends Speaker implements Validated{
             return false
         if (!Validator.isStringValid(this.lastName))
             return false
-        if (!Validator.isStringValid(this.email))
+        if (!Validator.isStringValid(this.email) || !Validator.isEmailValid(this.email))
             return false
         return true
     }

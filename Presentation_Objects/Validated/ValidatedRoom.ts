@@ -10,8 +10,6 @@ export class ValidatedRoom extends Room implements Validated{
     public validate(): boolean{
         if (!Validator.isStringValid(this.roomName))
             return false
-        if (!Validator.isIntValid(this.roomCapacity))
-            return false
-        return true
+        return (!isNaN(this.roomCapacity) && this.roomCapacity >= 0 && this.roomCapacity < 1000)
     }
 }

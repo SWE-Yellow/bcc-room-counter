@@ -4,15 +4,19 @@ export interface Validated{
 
 }
 
-export abstract class Validator {
+export class Validator {
     public static isStringValid(str: string): boolean {
-        //TODO: how do we reject sql commands?
         if (str == null || str.trim.length < 1)
             return false
         return true
     }
 
-    public static isIntValid(num: number): boolean {
-        return !isNaN(num)
+    /**
+     * Checks if email matches a basic regex.
+     * @param email email to validate
+     * @returns true if email matches general _@_._ and contains no whitespace & exactly one '@'
+     */
+    public static isEmailValid(email: string): boolean {
+        return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)
     }
 }
