@@ -6,7 +6,7 @@ import { Presentation } from '../Presentation_Objects/Presentation';
 
 let dbInt = new DatabaseInterface();
 
-let uiInterface: UIInterface = new UIInterface("", "", dbInt);
+let uiInterface: UIInterface = new UIInterface(dbInt);
 let result: string;
 
 /*
@@ -15,6 +15,13 @@ Replace import for DatabaseInterface in UIInterface with:
     import DatabaseInterface from "./tests/mocks/DatabaseInterfaceMock";
 */
 
+console.log("FETCH");
+console.log(uiInterface.fetchRooms())
+console.log(uiInterface.fetchSpeakers())
+console.log(uiInterface.fetchTimes())
+console.log(uiInterface.fetchPresentations())
+
+/** 
 
 console.log("///////////////////////////////////////");
 console.log("//           PRESENTATIONS           //");
@@ -198,3 +205,4 @@ console.log("\tActual:  ", result, "\n");
 result = uiInterface.deleteTime(0) ? "Pass" : "Fail";
 console.log("\tActual:  ", result, "\n");
 
+*/

@@ -8,8 +8,8 @@ import { ValidatedRoom } from "./Presentation_Objects/Validated/ValidatedRoom";
 import { ValidatedSpeaker } from "./Presentation_Objects/Validated/ValidatedSpeaker";
 import { ValidatedTimeSlot } from "./Presentation_Objects/Validated/ValidatedTimeSlot";
 
-import { DatabaseInterface } from "./DatabaseInterface";
-// import DatabaseInterface from "./tests/mocks/DatabaseInterfaceMock";
+// import { DatabaseInterface } from "./DatabaseInterface";
+import DatabaseInterface from "./tests/mocks/DatabaseInterfaceMock";
 
 
 export default class UIInterface {
@@ -178,17 +178,17 @@ export default class UIInterface {
 
         this.presentations = this.dbInterface.fetch_all_presentations()
         
-        let presentations: Map<String, Array<String>>
-        let topics: Array<String>
-        let rooms: Array<String>
-        let speakers: Array<String>
-        let times: Array<String>
+        let presentations: Map<String, Array<String>> = new Map();
+        let topics: Array<String> = new Array<String>(this.presentations.length);
+        let rooms: Array<String> = new Array<String>(this.presentations.length);
+        let speakers: Array<String> = new Array<String>(this.presentations.length);
+        let times: Array<String> = new Array<String>(this.presentations.length);
 
         for(let index = 0; index < this.presentations.length; index++) {
             topics[index] = this.presentations[index].getTopic()
-            rooms[index] = this.presentations[index].getRoom().getId().toString()
-            speakers[index] = this.presentations[index].getSpeaker().getId().toString()
-            times[index] = this.presentations[index].getTime().getId().toString()
+            rooms[index] = String(this.findIndexOf(this.rooms, this.presentations[index].getRoom().getId()))
+            speakers[index] = String(this.findIndexOf(this.speakers, this.presentations[index].getSpeaker().getId()))
+            times[index] = String(this.findIndexOf(this.timeSlots, this.presentations[index].getTime().getId()))
         }
         presentations.set("topic", topics)
         presentations.set("roomId", rooms)
@@ -205,20 +205,21 @@ export default class UIInterface {
 
         this.speakers = this.dbInterface.fetch_all_speakers()
 
-        let speakers: Map<String, Array<String>>
-        let firstNames: Array<String>
-        let lastNames: Array<String>
-        let ids: Array<String>
+        let speakers: Map<String, Array<String>> = new Map();
+        let firstNames: Array<String> = new Array<String>(this.speakers.length);
+        let lastNames: Array<String> = new Array<String>(this.speakers.length);
+        let emails: Array<String> = new Array<String>(this.speakers.length);
 
-        for(let index = 0; index < this.presentations.length; index++) {
+
+        for(let index = 0; index < this.speakers.length; index++) {
             firstNames[index] = this.speakers[index].getFirstName()
             lastNames[index] = this.speakers[index].getLastName()
-            ids[index] = this.speakers[index].getId().toString()
+            emails[index] = this.speakers[index].getEmail()
         }
 
         speakers.set("firstName", firstNames)
         speakers.set("lastName", lastNames)
-        speakers.set("id", ids)
+        speakers.set("email", emails)
 
         return speakers
     }
@@ -230,20 +231,17 @@ export default class UIInterface {
         
         this.rooms = this.dbInterface.fetch_all_rooms()
 
-        let rooms: Map<String, Array<String>>
-        let roomNames: Array<String>
-        let capacities: Array<String>
-        let ids: Array<String>
+        let rooms: Map<String, Array<String>> = new Map();
+        let roomNames: Array<String> = new Array<String>(this.rooms.length);
+        let capacities: Array<String> = new Array<String>(this.rooms.length);
 
-        for(let index = 0; index < this.presentations.length; index++) {
+        for(let index = 0; index < this.rooms.length; index++) {
             roomNames[index] = this.rooms[index].getName()
             capacities[index] = this.rooms[index].getCapacity().toString()
-            ids[index] = this.rooms[index].getId().toString()
         }
 
         rooms.set("roomName", roomNames)
         rooms.set("roomCapacity", capacities)
-        rooms.set("id", ids)
 
         return rooms
     }
@@ -255,20 +253,17 @@ export default class UIInterface {
 
         this.timeSlots = this.dbInterface.fetch_all_time_slots()
 
-        let timeSlots: Map<String, Array<String>>
-        let startTimes: Array<String>
-        let endTimes: Array<String>
-        let ids: Array<String>
+        let timeSlots: Map<String, Array<String>> = new Map();
+        let startTimes: Array<String> = new Array<String>(this.timeSlots.length)
+        let endTimes: Array<String> = new Array<String>(this.timeSlots.length)
 
         for(let index = 0; index < this.presentations.length; index++) {
-            startTimes[index] = this.timeSlots[index].getStart().toTimeString()
-            endTimes[index] = this.timeSlots[index].getEnd().toTimeString()
-            ids[index] = this.timeSlots[index].getId().toString()
+            startTimes[index] = this.timeSlots[index].getStart().toLocaleTimeString()
+            endTimes[index] = this.timeSlots[index].getEnd().toLocaleTimeString()
         }    
         
         timeSlots.set("startTime", startTimes)
         timeSlots.set("endTime", endTimes)
-        timeSlots.set("id", ids)
 
         return timeSlots
     }
@@ -413,6 +408,17 @@ export default class UIInterface {
             return true;
         }
         return false;
+    }
+
+    private findIndexOf(presentationObjects:Array<Room|Speaker|TimeSlot>, id:number): number{
+        
+        for(let i = 0; i < presentationObjects.length; i++){
+            if(presentationObjects[i].getId() == id){
+                return i;
+            }
+        }
+
+        return -1
     }
 
 }

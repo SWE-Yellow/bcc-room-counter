@@ -17,6 +17,11 @@ export default class DatabaseInterface {
 
     public numSave:number = 0;
 
+    private speakers = [new ValidatedSpeaker(0, "Ron", "Krawitz", "big_ron@hotmail.com"), new ValidatedSpeaker(1, "Abe", "Lincoln", "the_emancipator@aol.com")]
+    private rooms =  [new ValidatedRoom(0, "Test Room 1", 10), new ValidatedRoom(1, "Test Room 2", 500), new ValidatedRoom(2, "Test Room 3", 50)]
+    private times = [new ValidatedTimeSlot(0, new Date(0), new Date(0))]
+    private presentations = [new ValidatedPresentation("Test Topic", this.speakers[1], this.times[0], this.rooms[2])]
+
     constructor(){}
 
     private connect(): void {}
@@ -102,19 +107,19 @@ export default class DatabaseInterface {
 
 
     public fetch_all_presentations(): Array<Presentation>{
-        return [new ValidatedPresentation("", new ValidatedSpeaker(-1, "", "", ""), new ValidatedTimeSlot(0, new Date(0), new Date(0)), new ValidatedRoom(-1,"", 0))];
+        return this.presentations;
     }
 
     public fetch_all_rooms(): Array<Room>{
-        return [new ValidatedRoom(-1, "", 0)];
+        return this.rooms;
     }
 
     public fetch_all_speakers(): Array<Speaker>{
-        return [new ValidatedSpeaker(-1, "", "", "")];
+        return this.speakers;
     }
 
     public fetch_all_time_slots(): Array<TimeSlot>{
-        return [new ValidatedTimeSlot(0, new Date(0), new Date(0))];
+        return this.times;
     }
 
 
