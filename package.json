@@ -18,6 +18,7 @@
   "homepage": "https://github.com/SWE-Yellow/bcc-room-counter#readme",
   "dependencies": {
     "@types/node": "^12.12.7",
+    "fastify": "^2.10.0",
     "mysql": "^2.17.1"
   }
 }
