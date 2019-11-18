@@ -6,8 +6,8 @@ import { TimeSlot } from "../TimeSlot";
 
 export class ValidatedPresentation extends Presentation implements Validated{
 
-    constructor(topic: string, speaker: Speaker, time: TimeSlot, room: Room){
-        super(topic, speaker, time, room);
+    constructor(uid: number, topic: string, speaker: Speaker, time: TimeSlot, room: Room){
+        super(uid, topic, speaker, time, room);
     }
 
     public validate(): boolean{

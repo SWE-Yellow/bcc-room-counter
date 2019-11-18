@@ -8,6 +8,6 @@ export class ValidatedTimeSlot extends TimeSlot implements Validated{
     }
 
     public validate(): boolean{
-        return this.startTime < this.endTime
+        return this.startTime && this.endTime && this.startTime < this.endTime
     }
 }

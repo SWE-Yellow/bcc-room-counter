@@ -1,33 +1,22 @@
 export class Speaker {
 
     protected uid: number;
-    protected firstName: string;
-    protected lastName: string;
+    protected name: string;
     protected email: string;
 
 
-    protected constructor(uid: number, firstName: string, lastName: string, email: string){
+    protected constructor(uid: number, name: string, email: string){
         this.uid=uid;
-        this.firstName=firstName;
-        this.lastName=lastName;
+        this.name=name;
         this.email=email;
-
     }
 
-    public getFirstName(): string {
-        return this.firstName;
+    public getName(): string {
+        return this.name;
     }
 
-    public setFirstName(first: string): void {
-        this.firstName=first;
-    }
-
-    public getLastName(): string {
-        return this.lastName;
-    }
-
-    public setLastName(last: string): void {
-        this.lastName=last;
+    public setName(name: string): void {
+        this.name=name;
     }
 
 
@@ -39,12 +28,16 @@ export class Speaker {
         this.email=email;
     }
 
-
     public getId(): number{
         return this.uid;
     }
 
+    public setId(newId: number){
+        if (this.uid < 0)
+            this.uid = newId;
+    }
+
     public getStrings(): Array<string>{
-        return [this.firstName, this.lastName, this.email];
+        return [this.name, this.email];
     }
 }

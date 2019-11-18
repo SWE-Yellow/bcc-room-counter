@@ -17,7 +17,7 @@ export default class DatabaseInterface {
 
     public numSave:number = 0;
 
-    private speakers = [new ValidatedSpeaker(0, "Ron", "Krawitz", "big_ron@hotmail.com"), new ValidatedSpeaker(1, "Abe", "Lincoln", "the_emancipator@aol.com")]
+    private speakers = [new ValidatedSpeaker(0, "Ron Krawitz", "big_ron@hotmail.com"), new ValidatedSpeaker(1, "Abe Lincoln", "the_emancipator@aol.com")]
     private rooms =  [new ValidatedRoom(0, "Test Room 1", 10), new ValidatedRoom(1, "Test Room 2", 500), new ValidatedRoom(2, "Test Room 3", 50)]
     private times = [new ValidatedTimeSlot(0, new Date(0), new Date(0))]
     private presentations = [new ValidatedPresentation("Test Topic", this.speakers[1], this.times[0], this.rooms[2])]
@@ -102,7 +102,7 @@ export default class DatabaseInterface {
                 break;
             }
         }
-        return null;
+        return  false;
     }
 
 
@@ -137,26 +137,4 @@ export default class DatabaseInterface {
         console.log("\tExpected: Fail");
         return false;
     }
-
-    
-    private update(selecetd: Presentation): boolean;
-    private update(selected: Room): boolean;
-    private update(selected: Speaker): boolean;
-    private update(selected: TimeSlot): boolean;
-
-    private update(selected: any): boolean{
-        return null
-    }
-
-
-    private checkExists(selected: Presentation): boolean;
-    private checkExists(selected: Room): boolean;
-    private checkExists(selected: Speaker): boolean;
-    private checkExists(selected: TimeSlot): boolean;
-
-    private checkExists(selected: any): boolean{
-        return null
-    }
-
-
 }

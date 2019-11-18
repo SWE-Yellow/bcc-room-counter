@@ -8,13 +8,23 @@ import { TimeSlot } from "./TimeSlot";
     protected speaker: Speaker;
     protected time: TimeSlot;
     protected room: Room;
-    protected presentationId: number;
+    protected uid: number;
 
-    protected constructor(topic: string, speaker: Speaker, time: TimeSlot, room: Room) {
+    protected constructor(uid: number, topic: string, speaker: Speaker, time: TimeSlot, room: Room) {
+        this.uid = uid;
         this.topic = topic
         this.speaker = speaker
         this.time = time
         this.room = room
+    }
+
+    public getId(): number {
+        return this.uid;
+    }
+
+    public setId(newId: number){
+        if (this.uid < 0)
+            this.uid = newId;
     }
 
     public getTopic(): string {
@@ -25,7 +35,6 @@ import { TimeSlot } from "./TimeSlot";
         this.topic = topic
     }
 
-
     public getSpeaker(): Speaker {
         return this.speaker
     }
@@ -33,7 +42,6 @@ import { TimeSlot } from "./TimeSlot";
     public setSpeaker(speaker: Speaker): void {
         this.speaker = speaker
     }
-
 
     public getRoom(): Room {
         return this.room
@@ -43,7 +51,6 @@ import { TimeSlot } from "./TimeSlot";
         this.room = room
     }
 
-
     public getTime(): TimeSlot{
         return this.time
     }
@@ -52,15 +59,10 @@ import { TimeSlot } from "./TimeSlot";
         this.time = time
     }
 
-
-    public getPresentationId(): number {
-        return this.presentationId
-    }
-
     public getStrings(): Array<string>{
         return [
             this.topic,
-            this.speaker.getFirstName + " " + this.speaker.getLastName,
+            this.speaker.getName(),
             this.room.getName(),
             this.time.getStart.toString + "-" + this.time.getEnd.toString
         ]

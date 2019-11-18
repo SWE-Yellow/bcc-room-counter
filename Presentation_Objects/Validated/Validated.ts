@@ -6,7 +6,7 @@ export interface Validated{
 
 export class Validator {
     public static isStringValid(str: string): boolean {
-        if (str == null || str.trim.length < 1)
+        if (str == null || str.trim().length < 1)
             return false
         return true
     }

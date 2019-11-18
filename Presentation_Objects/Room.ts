@@ -28,6 +28,10 @@ export class Room {
         this.roomCapacity=roomCapacity; 
     }
 
+    public setId(newId: number){
+        if (this.uid < 0)
+            this.uid = newId;
+    }
 
     public getId(): number{
         return this.uid;

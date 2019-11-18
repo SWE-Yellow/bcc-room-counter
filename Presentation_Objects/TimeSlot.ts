@@ -27,9 +27,13 @@ export class TimeSlot{
         this.endTime=end;
     }
 
-
     public getId(): number{
         return this.uid;
+    }
+
+    public setId(newId: number){
+        if (this.uid < 0)
+            this.uid = newId;
     }
 
     public getStrings(): Array<string>{

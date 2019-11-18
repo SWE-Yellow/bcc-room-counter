@@ -6,7 +6,7 @@ import { Presentation } from '../Presentation_Objects/Presentation';
 
 let dbInt = new DatabaseInterface();
 
-let uiInterface: UIInterface = new UIInterface(dbInt);
+let uiInterface: UIInterface = new UIInterface();
 let result: string;
 
 /*
@@ -15,11 +15,83 @@ Replace import for DatabaseInterface in UIInterface with:
     import DatabaseInterface from "./tests/mocks/DatabaseInterfaceMock";
 */
 
-console.log("FETCH");
-console.log(uiInterface.fetchRooms())
-console.log(uiInterface.fetchSpeakers())
-console.log(uiInterface.fetchTimes())
-console.log(uiInterface.fetchPresentations())
+setTimeout(function(){ 
+    uiInterface.saveRoom(-1, "Testrewqnj", 911).then(value => {
+        console.log(value)
+    })
+
+    uiInterface.saveRoom(-1, "Testijnkjnkjnng", 10).then(value => {
+        console.log(value)
+    })
+
+    uiInterface.saveSpeaker(-1, "Name2", "email2@test.com").then(value => {
+        console.log(value)
+    })
+
+    uiInterface.saveSpeaker(-1, "Yay", "email2@email2.com").then(value => {
+        console.log(value)
+    })
+
+    uiInterface.saveTime(-1, new Date(4321832), new Date(435215321532)).then(value => {
+        console.log(value)
+    })
+
+    uiInterface.saveSpeaker(-1, ";DELETE  FROM room--", "email42@email.edu").then(value => {
+        console.log(value)
+    })
+
+    
+
+    setTimeout(function(){
+        uiInterface.savePresentation(-1, "Math", 0, 0, 0).then( (result) => {
+            console.log(result);
+        });
+    }, 50)
+    
+
+    // uiInterface.deleteRoom(0).then(value => {
+    //     console.log(value)
+    // })
+
+    // uiInterface.deleteSpeaker(0).then(value => {
+    //     console.log(value)
+    // })
+
+    // uiInterface.deleteTime(0).then(value => {
+    //     console.log(value)
+    // })
+
+    // uiInterface.deletePresentation(0).then(value => {
+    //     console.log(value)
+    // })
+
+    // uiInterface.fetchRooms().then(value =>{
+    //     console.log(value)
+    // })
+
+    // uiInterface.fetchSpeakers().then(value =>{
+    //     console.log(value)
+    // })
+
+    // uiInterface.fetchTimes().then(value =>{
+    //     console.log(value)
+    // })
+
+    // uiInterface.fetchPresentations().then(value =>{
+    //     console.log(value)
+    // })
+
+    setTimeout(function(){
+        uiInterface.disconnect()
+    }, 1000);
+}, 500);
+
+
+
+// console.log(uiInterface.fetchRooms())
+// console.log(uiInterface.fetchSpeakers())
+// console.log(uiInterface.fetchTimes())
+// console.log(uiInterface.fetchPresentations())
 
 /** 
 

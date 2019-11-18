@@ -8,8 +8,8 @@ import { ValidatedRoom } from "./Presentation_Objects/Validated/ValidatedRoom";
 import { ValidatedSpeaker } from "./Presentation_Objects/Validated/ValidatedSpeaker";
 import { ValidatedTimeSlot } from "./Presentation_Objects/Validated/ValidatedTimeSlot";
 
-// import { DatabaseInterface } from "./DatabaseInterface";
-import DatabaseInterface from "./tests/mocks/DatabaseInterfaceMock";
+import { DatabaseInterface } from "./DatabaseInterface";
+// import DatabaseInterface from "./tests/mocks/DatabaseInterfaceMock";
 
 
 export default class UIInterface {
@@ -33,10 +33,18 @@ export default class UIInterface {
         }
 
         //Fetch rooms from database to populate arrays
-        this.presentations = this.dbInterface.fetch_all_presentations()
-        this.rooms = this.dbInterface.fetch_all_rooms()
-        this.speakers = this.dbInterface.fetch_all_speakers()
-        this.timeSlots = this.dbInterface.fetch_all_time_slots()
+        this.repopulate()
+    }
+
+    public disconnect(){
+        this.dbInterface.disconnect();
+    }
+
+    private async repopulate(){
+        this.presentations = await this.dbInterface.fetch_all_presentations()
+        this.rooms = await this.dbInterface.fetch_all_rooms()
+        this.speakers = await this.dbInterface.fetch_all_speakers()
+        this.timeSlots = await this.dbInterface.fetch_all_time_slots()
     }
 
     /**
@@ -48,30 +56,45 @@ export default class UIInterface {
      * @param speakerId speakerId number in database
      * @param timeId timeslotId number in database
      */
-    public savePresentation(index: number, topic:string, roomId:number, speakerId:number, timeId:number): boolean{
+    public async savePresentation(index: number, topic:string, roomId:number, speakerId:number, timeId:number): Promise<boolean>{
         let currentPresentation;
+        let status = false;  
+        
+        currentPresentation = new ValidatedPresentation(-1, 
+            topic, 
+            this.speakers[speakerId], 
+            this.timeSlots[timeId], 
+            this.rooms[roomId])
+
+        if(!currentPresentation.validate()){
+            return new Promise(resolve => {
+                resolve(false)
+            })
+        }
 
         if(this.isValidIndex(index, this.presentations.length)){
-            currentPresentation = this.presentations[index]
-            if(!this.deletePresentation(index)){
-                return false;
-            }
-        }else{
-            currentPresentation = new ValidatedPresentation("", null, null, null)
+
+            currentPresentation.setId(this.presentations[index].getId())
+
+            return this.dbInterface.update_presentation(currentPresentation).catch(err => {
+                                                return false;
+                                            });
         }
 
-        currentPresentation.setTopic(topic);
-        currentPresentation.setRoom(this.rooms[roomId]);
-        currentPresentation.setSpeaker(this.speakers[speakerId]);
-        currentPresentation.setTime(this.timeSlots[timeId]);
+        currentPresentation = new ValidatedPresentation(-1, topic, this.speakers[speakerId], this.timeSlots[timeId], this.rooms[roomId]);
+        
+        status = await this.dbInterface.save(currentPresentation).catch(err => {
+            return false
+        })
+        
 
-        let status = this.dbInterface.save(currentPresentation)
-
-        if(status){
-            this.presentations = this.dbInterface.fetch_all_presentations()
+        if(status) {
+            this.presentations = await this.dbInterface.fetch_all_presentations();
         }
 
-        return status
+        return new Promise((resolve, reject) =>{
+            resolve(status);
+        })
     }
 
     /**
@@ -82,29 +105,39 @@ export default class UIInterface {
      * @param last String for surname
      * @param email String for email uid
      */
-    public saveSpeaker(index: number, first:string, last:string, email:string): boolean{
-        var currentSpeaker;
+    public async saveSpeaker(index: number, name:string, email:string): Promise<boolean>{
+        let currentSpeaker;
+        let status;
+
+        currentSpeaker = new ValidatedSpeaker(-1, name, email)
+
+        if(!currentSpeaker.validate()){
+            return new Promise(resolve =>{
+                resolve(false)
+            })
+        }
 
         if(this.isValidIndex(index, this.speakers.length)){
-            currentSpeaker = this.speakers[index]
-            if(!this.deleteSpeaker(index)){
-                return false;
-            }
-        }else{
-            currentSpeaker = new ValidatedSpeaker(index, "", "", "");
+
+            currentSpeaker.setId(this.speakers[index].getId())
+
+            return this.dbInterface.update_speaker(
+                currentSpeaker).catch(err => {
+                    return false;
+                })
         }
 
-        currentSpeaker.setFirstName(first);
-        currentSpeaker.setLastName(last);
-        currentSpeaker.setEmail(email);
+        status = await this.dbInterface.save(currentSpeaker).catch(err =>{
+            return false;
+        });
 
-        let status = this.dbInterface.save(currentSpeaker)
-
-        if(status){
-            this.speakers = this.dbInterface.fetch_all_speakers()
+        if(status) {
+            this.speakers = await this.dbInterface.fetch_all_speakers();
         }
 
-        return status
+        return new Promise(resolve =>{
+            resolve(status);
+        })
     }
 
     /**
@@ -114,29 +147,39 @@ export default class UIInterface {
      * @param room name of the room
      * @param capacity capacity of the room
      */
-    public saveRoom(index: number, name:string, capacity:number): boolean{
+    public async saveRoom(index: number, name:string, capacity:number): Promise<boolean>{
         let currentRoom;
+        let status;
 
-        if(this.isValidIndex(index, this.rooms.length)){
-            currentRoom = this.rooms[index];
+        currentRoom = new ValidatedRoom(-1, name, capacity)
 
-            if(!this.deleteRoom(index)){
-                return false;
+            if(!currentRoom.validate()){
+                return new Promise(resolve => {
+                    resolve(false)
+                })
             }
-        }else{
-            currentRoom = new ValidatedRoom(null, null, null);
+
+        if(this.isValidIndex(index, this.rooms.length)){  
+
+            currentRoom.setId(this.rooms[index].getId())
+                  
+            return this.dbInterface.update_room(
+                currentRoom).catch(err => {
+                    return false;
+                })
         }
 
-        currentRoom.setName(name);
-        currentRoom.setCapacity(capacity);
+        status = await this.dbInterface.save(currentRoom).catch(err =>{
+            return false;
+        });
 
-        let status = this.dbInterface.save(currentRoom)
-
-        if(status){
-            this.rooms = this.dbInterface.fetch_all_rooms()
+        if(status) {
+            this.rooms = await this.dbInterface.fetch_all_rooms();
         }
 
-        return status
+        return new Promise(resolve =>{
+            resolve(status);
+        })
     }
 
     /**
@@ -146,37 +189,47 @@ export default class UIInterface {
      * @param startTime start of the time slot
      * @param endTime end of the time slot
      */
-    public saveTime(index: number, startTime:Date, endTime:Date): boolean{
+    public async saveTime(index: number, startTime:Date, endTime:Date): Promise<boolean>{
         let current_time;
+        let status;
+
+        current_time = new ValidatedTimeSlot(-1, startTime, endTime)
+
+            if(!current_time.validate()){
+                return new Promise(resolve => {
+                    resolve(false)
+                })
+            }
 
         if(this.isValidIndex(index, this.timeSlots.length)){
-            current_time = this.timeSlots[index]
-            if(!this.deleteTime(index)){
-                return false;
-            }
-        }else{
-            current_time = new ValidatedTimeSlot(null, null, null);
+
+            current_time.setId(this.timeSlots[index].getId())
+
+            return this.dbInterface.update_time_slot(current_time
+                ).catch(err => {
+                    return false;
+                })
         }
 
-        current_time.setStart(startTime);
-        current_time.setEnd(endTime);
+        status = await this.dbInterface.save(current_time).catch(err => {
+            return false;
+        });
 
-
-        let status = this.dbInterface.save(current_time)
-
-        if(status){
-            this.timeSlots = this.dbInterface.fetch_all_time_slots()
+        if(status) {
+            this.timeSlots = await this.dbInterface.fetch_all_time_slots();
         }
 
-        return status
+        return new Promise(resolve =>{
+            resolve(status);
+        })
     }
 
     /**
      * Returns a map of presentations from the database
      */
-    public fetchPresentations(): Map<String, Array<String>>{
+    public async fetchPresentations(): Promise<Map<String, Array<String>>> {
 
-        this.presentations = this.dbInterface.fetch_all_presentations()
+        this.presentations = await this.dbInterface.fetch_all_presentations()
         
         let presentations: Map<String, Array<String>> = new Map();
         let topics: Array<String> = new Array<String>(this.presentations.length);
@@ -195,41 +248,42 @@ export default class UIInterface {
         presentations.set("speakersId", speakers)
         presentations.set("timeId", times)
         
-        return presentations
+        return new Promise(resolve => {
+            resolve(presentations)
+        })
     }
 
-    /**
-     * Returns a map of speakers from the database
-     */
-    public fetchSpeakers(): Map<String, Array<String>>{
+    // /**
+    //  * Returns a map of speakers from the database
+    //  */
+    public async fetchSpeakers(): Promise<Map<String, Array<String>>> {
 
-        this.speakers = this.dbInterface.fetch_all_speakers()
+        this.speakers = await this.dbInterface.fetch_all_speakers();
 
         let speakers: Map<String, Array<String>> = new Map();
-        let firstNames: Array<String> = new Array<String>(this.speakers.length);
-        let lastNames: Array<String> = new Array<String>(this.speakers.length);
+        let names: Array<String> = new Array<String>(this.speakers.length);
         let emails: Array<String> = new Array<String>(this.speakers.length);
 
 
         for(let index = 0; index < this.speakers.length; index++) {
-            firstNames[index] = this.speakers[index].getFirstName()
-            lastNames[index] = this.speakers[index].getLastName()
+            names[index] = this.speakers[index].getName()
             emails[index] = this.speakers[index].getEmail()
         }
 
-        speakers.set("firstName", firstNames)
-        speakers.set("lastName", lastNames)
+        speakers.set("name", names)
         speakers.set("email", emails)
 
-        return speakers
+        return new Promise(resolve => {
+            resolve(speakers)
+        });
     }
 
     /**
      * Returns a map of rooms from the database
      */
-    public fetchRooms(): Map<String, Array<String>>{
+    public async fetchRooms(): Promise<Map<String, Array<String>>> {
         
-        this.rooms = this.dbInterface.fetch_all_rooms()
+        this.rooms = await this.dbInterface.fetch_all_rooms();
 
         let rooms: Map<String, Array<String>> = new Map();
         let roomNames: Array<String> = new Array<String>(this.rooms.length);
@@ -243,29 +297,37 @@ export default class UIInterface {
         rooms.set("roomName", roomNames)
         rooms.set("roomCapacity", capacities)
 
-        return rooms
+        return new Promise(resolve => {
+            resolve(rooms)
+        });
     }
 
     /**
      * Returns a map of timeslots from the database
      */
-    public fetchTimes(): Map<String, Array<String>>{
+    public async fetchTimes(): Promise<Map<String, Array<String>>> {
 
-        this.timeSlots = this.dbInterface.fetch_all_time_slots()
+        this.timeSlots = await this.dbInterface.fetch_all_time_slots();
 
         let timeSlots: Map<String, Array<String>> = new Map();
         let startTimes: Array<String> = new Array<String>(this.timeSlots.length)
         let endTimes: Array<String> = new Array<String>(this.timeSlots.length)
+        let combined: Array<String> = new Array<String>(this.timeSlots.length)
 
-        for(let index = 0; index < this.presentations.length; index++) {
-            startTimes[index] = this.timeSlots[index].getStart().toLocaleTimeString()
-            endTimes[index] = this.timeSlots[index].getEnd().toLocaleTimeString()
+        var options = { hour: '2-digit', minute: '2-digit' };
+        for(let index = 0; index < this.timeSlots.length; index++) {
+            startTimes[index] = this.timeSlots[index].getStart().toLocaleTimeString("en-US", options)
+            endTimes[index] = this.timeSlots[index].getEnd().toLocaleTimeString("en-US", options)
+            combined[index] = (startTimes[index] + (" - ") + endTimes[index]) 
         }    
         
         timeSlots.set("startTime", startTimes)
         timeSlots.set("endTime", endTimes)
+        timeSlots.set("combined", combined)
 
-        return timeSlots
+        return new Promise(resolve => {
+            resolve(timeSlots)
+        });;
     }
 
 
@@ -274,7 +336,7 @@ export default class UIInterface {
      * 
      * @param index Index from array for the presentation
      */
-    public deletePresentation(index: number): boolean{
+    public async deletePresentation(index: number): Promise<boolean> {
 
         // Flag to determine if the presentation was deleted
         let deleted: boolean = false;
@@ -285,19 +347,18 @@ export default class UIInterface {
             // Get presentation object based on index (UID)
             let deletedPresentation: Presentation = this.presentations[index];
 
-            // Attempt to delete presentation from database
-            let dbDeleted = this.dbInterface.delete(deletedPresentation);
-
-            // If successfully deleted
-            if (dbDeleted) {
-                // Update presentations from database
-                // Set deleted flag
-                this.presentations = this.dbInterface.fetch_all_presentations();
-                deleted = true;
+            deleted = await this.dbInterface.delete(deletedPresentation).catch(err => {
+                return false;
+            });
+            
+            if(deleted) {
+                this.presentations = await this.dbInterface.fetch_all_presentations();
             }
         }
 
-        return deleted;
+        return new Promise(resolve => {
+            resolve(deleted)
+        });
     }
 
     /**
@@ -305,7 +366,7 @@ export default class UIInterface {
      * 
      * @param index Index from array for the speaker
      */
-    public deleteSpeaker(index: number): boolean{
+    public async deleteSpeaker(index: number): Promise<boolean> {
 
         // Flag to determine if the speaker was deleted
         let deleted: boolean = false;
@@ -315,20 +376,19 @@ export default class UIInterface {
 
             // Get presentation object based on index (UID)
             let deletedSpeaker: Speaker = this.speakers[index];
-            
-            // Attempt to delete given speaker in database
-            let dbDeleted = this.dbInterface.delete(deletedSpeaker);
 
-            // If successfully deleted
-            if (dbDeleted) {
-                // Update speakers from database
-                // Set deleted flag
-                this.speakers = this.dbInterface.fetch_all_speakers();
-                deleted = true;
+            deleted = await this.dbInterface.delete(deletedSpeaker).catch(err => {
+                return false;
+            });
+
+            if(deleted) {
+                this.speakers = await this.dbInterface.fetch_all_speakers();
             }
         }
 
-        return deleted;
+        return new Promise(resolve => {
+            resolve(deleted)
+        });
     }
 
     /**
@@ -336,7 +396,7 @@ export default class UIInterface {
      * 
      * @param index Index from array for the room
      */
-    public deleteRoom(index: number): boolean{
+    public async deleteRoom(index: number): Promise<boolean> {
 
         // Flag to determine if the room was deleted
         let deleted: boolean = false;
@@ -347,19 +407,18 @@ export default class UIInterface {
             // Get presentation object based on index (UID)
             let deletedRoom: Room = this.rooms[index];
 
-            // Attempt to delete given room in database
-            let dbDeleted = this.dbInterface.delete(deletedRoom);
-
-            // If successfully deleted
-            if (dbDeleted) {
-                // Update room from database
-                // Set deleted flag
-                this.rooms = this.dbInterface.fetch_all_rooms();
-                deleted = true;
+            deleted = await this.dbInterface.delete(deletedRoom).catch(err => {
+                return false;
+            });
+            
+            if(deleted){
+                this.rooms = await this.dbInterface.fetch_all_rooms()
             }
         }
 
-        return deleted;
+        return new Promise(resolve => {
+            resolve(deleted)
+        });
     }
 
     /**
@@ -367,7 +426,7 @@ export default class UIInterface {
      * 
      * @param index Index from array for the time slot
      */
-    public deleteTime(index: number): boolean{
+    public async deleteTime(index: number): Promise<boolean> {
 
         // Flag to determine if the time was deleted
         let deleted: boolean = false;
@@ -378,19 +437,18 @@ export default class UIInterface {
             // Get presentation object based on index (UID)
             let deletedTime: TimeSlot = this.timeSlots[index];
 
-            // Delete the given timeslot in database
-            let dbDeleted = this.dbInterface.delete(deletedTime);
+            deleted = await this.dbInterface.delete(deletedTime).catch(err => {
+                return false;
+            })
 
-            // If successfully deleted
-            if (dbDeleted) {
-                // Update timeslots from database
-                // Set deleted flag
-                this.timeSlots = this.dbInterface.fetch_all_time_slots();
-                deleted = true;
+            if(deleted){
+                this.timeSlots = await this.dbInterface.fetch_all_time_slots()
             }
         }
-        
-        return deleted;
+
+        return new Promise(resolve =>{
+            resolve(deleted)
+        });
     }
 
     /**
@@ -398,13 +456,14 @@ export default class UIInterface {
      * 
      * @param testIndex Index to test validity of
      */
-    private isValidIndex(testIndex: number, arrayLenth: number): boolean {
+    private isValidIndex(testIndex: number, arrayLength: number): boolean {
         
         // Verify if index is and integer
         let isInteger: boolean = Number.isInteger(testIndex);
 
         // If is an integer and within bounds of the array
-        if( isInteger && testIndex >= 0 && testIndex < arrayLenth ){
+
+        if( isInteger && testIndex >= 0 && testIndex < arrayLength ){
             return true;
         }
         return false;
@@ -417,8 +476,6 @@ export default class UIInterface {
                 return i;
             }
         }
-
         return -1
     }
-
 }

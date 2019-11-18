@@ -9,7 +9,7 @@ import { ValidatedSpeaker } from "./Presentation_Objects/Validated/ValidatedSpea
 import { ValidatedTimeSlot } from "./Presentation_Objects/Validated/ValidatedTimeSlot";
 import { Validated } from "./Presentation_Objects/Validated/Validated";
 
-var mysql:any = require("mysql");
+import { Database } from "./Database"
 
 export class DatabaseInterface {
 
@@ -17,264 +17,256 @@ export class DatabaseInterface {
 
     //testing this.configs
     private readonly USERNAME: string =         "root";
-    private readonly PASSWORD: string =         "password";
+    private readonly PASSWORD: string =         "";
     private readonly DATABASE_NAME: string =    "mydb";
     private readonly HOST: string =             "localhost";
+    private readonly timeout: number =           5000;
 
-    constructor(){}
+    private db:Database;
 
-    private connect(): void {
-      //ALTER USER 'root'@'localhost' IDENTIFIED WITH mysql_native_password BY 'password'; <-- Use this to solve Client Auth ERROR.
-
-      this.con = mysql.createConnection({
+    constructor(){
+      this.db = new Database({
         host: this.HOST,
         user: this.USERNAME,
         password: this.PASSWORD,
         database: this.DATABASE_NAME
       });
-      this.con.connect(function(err) {
-        if(err) throw err;
-        //this.console.log("connected");
-      });
-
-      /* Pool
-      this.con = mysql.createPool({
-        host:       this.HOST,
-        user:       this.USERNAME,
-        password:   this.PASSWORD,
-        database:   this.DATABASE_NAME
-      });
-
-      this.con.getConnection((err, connection) => {
-        if(err) {
-          if(err.code === 'PROTOCOL_CONNECTION_LOST') {
-            console.error('Database connection was closed.');
-          }
-          if(err.code === 'ER_CON_COUNT_ERROR') {
-            console.error('Database has too many connections.');
-          }
-          if(err.code === 'ECONNREFUSED') {
-            console.error('Database connection was refused.');
-          }
-        }
-        if(connection) connection.release()
-      });
-      */
-
-    }
-
-    private disconnect(): void{
-      this.con.end(function(err) {
-        if(err) throw err;
-      });
-      //this.con.destroy();
-    }
-
-    public save(selected: Presentation | Room | Speaker | TimeSlot): boolean {
       this.connect();
+    }
 
-      let save: boolean = false;
+    public connect(): void {
+      this.db.connect();
+    }
+
+    public disconnect(): void{
+      this.db.close();
+    }
+
+    public save(selected: Presentation | Room | Speaker | TimeSlot): Promise<boolean> {
+      // this.connect();
+
+      let save: Promise<boolean>
 
       if (selected instanceof Presentation) {
-        this.con.query({
-          sql: 'INSERT INTO Presentation SET idSpeech = ?, presentationSpeaker = ?, presentationRoom = ?, presentationTimeSlot = ?, topic = ?',
-          timeout: 40000,
-          values: [selected.getPresentationId(), selected.getSpeaker(), selected.getRoom(), selected.getTime(), selected.getTopic()]
-
-        }, function(err, result, fields) {
-          if(err) throw err;
-          save = true;
+        
+        save = this.db.insert({
+          sql: 'INSERT INTO Presentation SET idSpeaker = ?, idRoom = ?, idTimeSlot = ?, topic = ?',
+          timeout: this.timeout,
+          values: [selected.getSpeaker().getId(), selected.getRoom().getId(), selected.getTime().getId(), selected.getTopic()]
         });
 
       } else if (selected instanceof Room) {
-        this.con.query({
-          sql: 'INSERT INTO Room SET idRoom = ?, roomName = ?, roomCapacity = ?',
-          timeout: 40000,
-          values: [selected.getId(), selected.getName(), selected.getCapacity()]
-        }, function(err, result, fields) {
-          if(err) throw err;
-          save = true;
+
+        save = this.db.insert({
+          sql: 'INSERT INTO Room SET roomName = ?, roomCapacity = ?',
+          timeout: this.timeout,
+          values: [selected.getName(), selected.getCapacity()]
         });
 
       } else if(selected instanceof Speaker) {
-        this.con.query({
-          sql: 'INSERT INTO Speaker SET idSpeaker = ?, speakerFIrstName = ?, speakerEmail = ?, speakerLastName = ?',
-          timeout: 40000,
-          values: [selected.getId(), selected.getFirstName(), selected.getEmail(), selected.getLastName()]
-        }, function(err, result, fields) {
-          if(err) throw err;
-          save = true;
+
+        save = this.db.insert({
+          sql: 'INSERT INTO Speaker SET idSpeaker = ?, speakerName = ?, speakerEmail = ?',
+          timeout: this.timeout,
+          values: [selected.getId(), selected.getName(), selected.getEmail()]
         });
 
       } else if(selected instanceof TimeSlot) {
-        this.con.query({
+
+        save = this.db.insert({
           sql: 'INSERT INTO TimeSlot SET idTimeSlot = ?, endTime = ?, startTime = ?',
-          timeout: 40000,
+          timeout: this.timeout,
           values: [selected.getId(), selected.getEnd(), selected.getStart()]
-        }, function(err, result, fields) {
-          if(err) throw err;
-          save = true;
         });
 
       }
 
-      this.disconnect();
+      // this.disconnect();
       return save;
     }
 
-    public fetch_all_presentations(): Array<Presentation>{
-      this.connect();
+    public async fetch_all_presentations(): Promise<Array<Presentation>>{
+      // this.connect();
       let res: Array<Presentation> = [];
-      this.con.query("SELECT * FROM Presentation", function(err, result, fields) {
-        if(err) throw err;
-        res = result;
+
+      let temp = this.db.query({
+        sql: `SELECT * FROM Presentation as p 
+              left join Room as r on p.idRoom = r.idRoom
+              left join Speaker as s on p.idSpeaker = s.idSpeaker
+              left join TimeSlot as ts on p.idTimeSlot = ts.idTimeSlot`,
+        timeout: this.timeout
       });
-      this.disconnect();
-      return res;
+
+      await temp.then((rows) =>{
+        rows.forEach(element => {
+          res.push( new ValidatedPresentation(element['idPresentation'], element['topic'],
+                      new ValidatedSpeaker(element['idSpeaker'], element['speakerName'], element['speakerEmail']),
+                      new ValidatedTimeSlot(element['idTimeSlot'], element['startTime'], element['endTime']),
+                      new ValidatedRoom(element['idRoom'], element['roomName'], element['roomCapacity']))
+                    )
+        });
+      }).catch(error =>{
+        // console.log(error)
+      })
+      
+      // this.disconnect();
+      return res
     }
 
-    public fetch_all_rooms(): Array<Room>{
-      this.connect();
+    public async fetch_all_rooms(): Promise<Array<Room>> {
+      // this.connect();
       let res: Array<Room> = [];
-      this.con.query("SELECT * FROM Room", function(err, result, fields) {
-        if(err) throw err;
-        res = result;
+      let temp = this.db.query({
+        sql: "SELECT * FROM Room",
+        timeout: this.timeout
       });
-      this.disconnect();
-        return res;
+
+      await temp.then(rows =>{
+        rows.forEach(element => {
+          res.push(new ValidatedRoom(element["idRoom"], element["roomName"], element["roomCapacity"]))
+        });
+      }).catch(error =>{
+        // console.log("ERROR")
+        // console.log(error)
+      })
+      
+      return res
     }
 
-    public fetch_all_speakers(): Array<Speaker>{
-      this.connect();
+    public async fetch_all_speakers(): Promise<Array<Speaker>>{
+      // this.connect();
       let res: Array<Speaker> = [];
-      this.con.query("SELECT * FROM Speaker", function(err, result, fields) {
-        if(err) throw err;
-        res = result;
+      let temp = this.db.query({
+        sql: "SELECT * FROM Speaker",
+        timeout: this.timeout
       });
-      this.disconnect();
-        return res;
+
+      await temp.then(rows =>{
+        rows.forEach(element => {
+          res.push(new ValidatedSpeaker(element["idSpeaker"], element["speakerName"], element["speakerEmail"]))
+        });
+      }).catch(error =>{
+        // console.log("ERROR")
+        // console.log(error)
+      })
+      
+      return res
     }
 
-    public fetch_all_time_slots(): Array<TimeSlot>{
-      this.connect();
+    public async fetch_all_time_slots(): Promise<Array<TimeSlot>> {
+      // this.connect();
       let res: Array<TimeSlot> = [];
-      this.con.query("SELECT * FROM TimeSlot", function(err, result, fields) {
-        if(err) throw err;
-        res = result;
+      let temp = this.db.query({
+        sql: "SELECT * FROM timeslot",
+        timeout: this.timeout
       });
-      this.disconnect();
-        return res;
+
+      await temp.then(rows =>{
+        rows.forEach(element => {
+          res.push(new ValidatedTimeSlot(element["idTimeSlot"], element['startTime'], element["endTime"]))
+        });
+      }).catch(error =>{
+        // console.log("ERROR")
+        // console.log(error)
+      })
+      
+      return res
     }
 
-    public delete(selected: Presentation | Room | Speaker | TimeSlot): boolean {
-      this.connect();
+    
+    public delete(selected: Presentation | Room | Speaker | TimeSlot): Promise<boolean> {
+      // this.connect();
 
-      let d: boolean = false;
+      let d: Promise<boolean>;
 
       if (selected instanceof Presentation) {
-        this.con.query({
-          sql: 'DELETE FROM Presentation WHERE idSpeech = ?',
-          timeout: 40000,
-          values: [selected.getPresentationId()]
-        }, function(err, res) {
-          if(err) throw err;
-          d = true;
-        });
+
+        // console.log(`DELETE FROM Presentation WHERE idPresentation = ${selected.getId()}`);
+
+        d = this.db.delete({
+          sql: 'DELETE FROM Presentation WHERE idPresentation = ?',
+          timeout: this.timeout,
+          values: [selected.getId()]
+        })
 
       } else if (selected instanceof Room) {
-        this.con.query({
+
+        // console.log(`DELETE FROM Room WHERE idRoom = ${selected.getId()}`);
+
+        d = this.db.delete({
           sql: 'DELETE FROM Room WHERE idRoom = ?',
-          timeout: 40000,
+          timeout: this.timeout,
           values: [selected.getId()]
-        }, function(err, res) {
-          if(err) throw err;
-          d = true;
-        });
+        })
 
       } else if (selected instanceof Speaker) {
-        this.con.query({
+        
+        d = this.db.delete({
           sql: 'DELETE FROM Speaker WHERE idSpeaker = ?',
-          timeout: 40000,
+          timeout: this.timeout,
           values: [selected.getId()]
-        }, function(err, res) {
-          if(err) throw err;
-          d = true;
         });
 
       } else if (selected instanceof TimeSlot) {
-        this.con.query({
+
+        d = this.db.delete({
           sql: 'DELETE FROM TimeSlot WHERE idTimeSlot = ?',
-          timeout: 40000,
+          timeout: this.timeout,
           values: [selected.getId()]
-        }, function(err, res) {
-          if(err) throw err;
-          d = true;
         });
 
       }
 
-      this.disconnect();
+      // this.disconnect();
 
       return d;
     }
 
-    private update(selected: ValidatedPresentation | ValidatedRoom | ValidatedSpeaker | ValidatedTimeSlot): boolean {
-      this.connect();
-      let d: boolean = false;
+    public update_presentation(selected: Presentation): Promise<boolean>{
+      let res: Promise<boolean>
 
-      if(selected instanceof ValidatedPresentation) {
-        this.con.query({
-          sql: 'UPDATE Presentation SET presentationSpeaker = ? AND presentationRoom = ? AND presentationTimeSlot =?',
-          timeout: 40000,
-          values: [selected.getSpeaker(), selected.getRoom(), selected.getTime()]
-        }, function(err, res) {
-          if(err) throw err;
-          d = true;
-        });
+      res = this.db.update({
+        sql: 'UPDATE Presentation set topic = ?, idRoom = ?, idSpeaker = ?, idTimeSlot = ? WHERE idPresentation = ?',
+        timeout: this.timeout,
+        values: [selected.getTopic(), selected.getRoom().getId(), selected.getSpeaker().getId(), selected.getTime().getId(), selected.getId()]
+      });
 
-      } else if(selected instanceof ValidatedRoom) {
-        this.con.query({
-          sql: 'UPDATE Room SET roomName = ? AND roomCapacity = ?',
-          timeout: 40000,
-          values: [selected.getName(), selected.getCapacity()]
-        }, function(err, res) {
-          if(err) throw err;
-          d = true;
-        });
-
-      } else if(selected instanceof ValidatedSpeaker) {
-        this.con.query({
-          sql: 'UPDATE Speaker SET speakerFIrstName = ? AND speakerLastName = ? AND speakerEmail =?',
-          timeout: 40000,
-          values: [selected.getFirstName(), selected.getLastName(), selected.getEmail()]
-        }, function(err, res) {
-          if(err) throw err;
-          d = true;
-        });
-
-      } else if(selected instanceof ValidatedTimeSlot) {
-        this.con.query({
-          sql: 'UPDATE TimeSlot SET endTime = ? AND startTime = ?',
-          timeout: 40000,
-          values: [selected.getEnd(), selected.getStart()]
-        }, function(err, res) {
-          if(err) throw err;
-          d = true;
-        });
-
-      }
-
-      this.disconnect();
-      return d;
+      return res
     }
 
-    private checkExists(selected: Presentation): boolean;
-    private checkExists(selected: Room): boolean;
-    private checkExists(selected: Speaker): boolean;
-    private checkExists(selected: TimeSlot): boolean;
+    public update_room(selected: Room): Promise<boolean>{
+      let res: Promise<boolean>
+      
+      res = this.db.update({
+        sql: 'UPDATE Room set roomName = ?, roomCapacity = ? where idRoom = ?',
+        timeout: this.timeout,
+        values: [selected.getName(), selected.getCapacity(), selected.getId()]
+      });
 
-    private checkExists(selected: any): boolean{
-        return null
+      return res
     }
 
+    public update_speaker(selected: Speaker): Promise<boolean>{
+      let res: Promise<boolean>
+      
+      res = this.db.update({
+        sql: 'UPDATE Speaker set speakerName = ?, speakerEmail = ? where idSpeaker = ?',
+        timeout: this.timeout,
+        values: [selected.getName(), selected.getEmail(), selected.getId()]
+      });
+
+      return res
+    }
+
+    public update_time_slot(selected: TimeSlot): Promise<boolean>{
+      let res: Promise<boolean>
+      
+      res = this.db.update({
+        sql: 'UPDATE TimeSlot set startTime = ?, endTime = ? where idTimeSlot = ?',
+        timeout: this.timeout,
+        values: [selected.getStart(), selected.getEnd(), selected.getId()]
+      });
+
+      return res
+    }
 }
