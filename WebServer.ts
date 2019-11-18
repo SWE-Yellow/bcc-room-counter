@@ -12,7 +12,7 @@ server.get('/getRooms', (request, reply) => {
             reply.code(200).send(JSON.stringify(rooms));
         },
         (err) => {
-            console.log(err);
+            server.log.error(err);
             reply.code(500).send(err);
         }
     );
