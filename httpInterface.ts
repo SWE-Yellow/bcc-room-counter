@@ -16,27 +16,55 @@ export default class httpInterface{
             method: this.method,
         })
 
+        //TODO: add logic to recontruct objects from json
+
         return req
     }
 
-    //parameters need to hold values of objects 
-    private async modify(path:string, parameters:Array<any>):Promise<boolean>{
+    private async modify(path:string):Promise<boolean>{
 
-        //TODO: Add parameter logic
+        let status:boolean
 
         let req = await request({
             host: this.host,
-            //TODO: combine parameters with provided path
             path: path,
             method: this.method
+        }, response => {
+            response.on("status", (chunk) =>{
+                status = chunk
+            })
         })
 
-        return null
+        return new Promise(resolve =>{
+            resolve(status)
+        })
     }
 
     public async save(selected: Presentation | Room | Speaker | TimeSlot): Promise<boolean>{
         //TODO: Implement
-        return null;
+        let saved:Promise<boolean>;
+
+        if(selected instanceof Presentation){
+            
+            saved = null;
+
+        }else if(selected instanceof Speaker){
+            
+            let temp = await this.modify("createRoom?uid=")
+
+            saved = null
+
+        }else if(selected instanceof Room){
+
+            saved = null;
+
+        }else if(selected instanceof TimeSlot){
+
+            saved = null
+        }
+
+
+        return saved;
     }
 
     public async fetch_all_presentations():Promise<Array<Presentation>>{
@@ -61,7 +89,27 @@ export default class httpInterface{
     
     public async delete(selected: Presentation | Room | Speaker | TimeSlot): Promise<boolean>{
         //TODO: Implement
-        return null;
+
+        let deleted:Promise<boolean>;
+
+        if(selected instanceof Presentation){
+            
+            deleted = null;
+            
+        }else if(selected instanceof Speaker){
+
+            deleted = null
+
+        }else if(selected instanceof Room){
+
+            deleted = null;
+
+        }else if(selected instanceof TimeSlot){
+
+            deleted = null
+        }
+
+        return deleted;
     }
 
     public async update_presentation(selected: Presentation): Promise<boolean>{
