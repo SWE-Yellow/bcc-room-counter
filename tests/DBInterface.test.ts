@@ -9,10 +9,11 @@ import { ValidatedSpeaker } from "../Presentation_Objects/Validated/ValidatedSpe
 import { ValidatedTimeSlot } from "../Presentation_Objects/Validated/ValidatedTimeSlot";
 
 import { DatabaseInterface } from "../DatabaseInterface";
+import { httpInterface } from "../httpInterface"
 
-let dbInt = new DatabaseInterface();
+let dbInt = new httpInterface();
 
-let room    = new ValidatedRoom(11, "tevghfkfkfdsafdtf", 5);
+let room    = new ValidatedRoom(-1, "tevghfkfkfdsafdtf", 5);
 let speaker = new ValidatedSpeaker(1, "Ron Krawitz", "Big_Ron@hotmail.com");
 let time    = new ValidatedTimeSlot(3, new Date(), new Date(5));
 let presentation = new ValidatedPresentation(-1, "Test Topic", speaker, time, room)
@@ -21,6 +22,12 @@ let rooms;
 let timeslots;
 let speakers;
 let presentations;
+
+console.log("Testing")
+dbInt.fetch_all_rooms().then(value => {
+    console.log("Value Recieved")
+    console.log(value)
+})
 
 // dbInt.save(room).then(value =>{
 //     console.log("value")
@@ -48,20 +55,20 @@ let presentations;
 //     console.log(error)
 // })
 
-dbInt.fetch_all_rooms().then(value =>{
-    console.log(value)
+// dbInt.fetch_all_rooms().then(value =>{
+//     console.log(value)
 
-    rooms = value;
+//     rooms = value;
 
-    dbInt.delete(rooms[0]).then(result => {
-        console.log(result)
-    }).catch(error =>{
-        console.log(error)
-    })
+//     // dbInt.delete(rooms[0]).then(result => {
+//     //     console.log(result)
+//     // }).catch(error =>{
+//     //     console.log(error)
+//     // })
 
-}).catch(error =>{
-    console.log(error)
-})
+// }).catch(error =>{
+//     console.log(error)
+// })
 
 
 // dbInt.fetch_all_speakers().then(value =>{

@@ -9,6 +9,7 @@ import { ValidatedSpeaker } from "./Presentation_Objects/Validated/ValidatedSpea
 import { ValidatedTimeSlot } from "./Presentation_Objects/Validated/ValidatedTimeSlot";
 
 import { DatabaseInterface } from "./DatabaseInterface";
+import { httpInterface } from "./httpInterface";
 // import DatabaseInterface from "./tests/mocks/DatabaseInterfaceMock";
 
 
@@ -18,19 +19,15 @@ export default class UIInterface {
     private speakers: Array<Speaker>;
     private timeSlots: Array<TimeSlot>;
     private dbInterface: DatabaseInterface;
+    private httpInterface: httpInterface;
 
     /**
      * Main Constructor
      * 
      * @param dbInt optional for testing purposes
      */
-    constructor(dbInt?:DatabaseInterface){
-        if(dbInt){
-            this.dbInterface = dbInt
-        }else{
-            //Instantiate Database interface
-            this.dbInterface = new DatabaseInterface()
-        }
+    constructor(){
+        this.httpInterface = new httpInterface();
 
         //Fetch rooms from database to populate arrays
         this.repopulate()
@@ -169,7 +166,7 @@ export default class UIInterface {
                 })
         }
 
-        status = await this.dbInterface.save(currentRoom).catch(err =>{
+        status = await this.httpInterface.save(currentRoom).catch(err =>{
             return false;
         });
 
