@@ -8,6 +8,48 @@ const server: fastify.FastifyInstance<Server, IncomingMessage, ServerResponse> =
 
 const databaseInterface:DatabaseInterface = new DatabaseInterface();
 
+server.get('/getTimeslots', (request, reply) => {
+    databaseInterface.fetch_all_time_slots().then(
+        (timeslots) => {
+            reply.code(200).send(JSON.stringify(timeslots));
+        },
+        (err) => {
+            server.log.error(err);
+            reply.code(500).send(err);
+        }
+    );
+});
+
+server.get('/createTimeslot', (request, reply) => {
+    var timeslot:ValidatedTimeSlot = new ValidatedTimeSlot(request.params.uid, request.params.startTime, request.params.endTime);
+    if (timeslot.validate()) {
+        databaseInterface.save(timeslot);
+        reply.code(200).send("true");
+    } else{
+        reply.code(200).send("false");
+    } 
+});
+
+server.get('/deleteTimeslot', (request, reply) => {
+    var timeslot:ValidatedTimeSlot = new ValidatedTimeSlot(request.params.uid, request.params.startTime, request.params.endTime);
+    if (timeslot.validate()) {
+        databaseInterface.delete(timeslot);
+        reply.code(200).send("true");
+    } else{
+        reply.code(200).send("false");
+    } 
+});
+
+server.get('/updateTimeslot', (request, reply) => {
+    var timeslot:ValidatedTimeSlot = new ValidatedTimeSlot(request.params.uid, request.params.startTime, request.params.endTime);
+    if (timeslot.validate()) {
+        databaseInterface.update_time_slot(timeslot);
+        reply.code(200).send("true");
+    } else{
+        reply.code(200).send("false");
+    } 
+});
+
 server.get('/getRooms', (request, reply) => {
     databaseInterface.fetch_all_rooms().then(
         (rooms) => {
