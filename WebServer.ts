@@ -26,7 +26,7 @@ server.get('/getPresentations', (request, reply) => {
     );
 });
 
-server.get('/savePresentation', (request, reply) => {
+server.get('/createPresentation', (request, reply) => {
     var speaker:Speaker = null;
     var room:Room = null;
     var timeSlot:TimeSlot = null;
@@ -123,7 +123,7 @@ server.get('/getSpeakers', (request, reply) => {
 
 
 
-server.get('/saveRoom', (request, reply) => {
+server.get('/createRoom', (request, reply) => {
     var room:ValidatedRoom = new ValidatedRoom(request.params.uid, request.params.roomName, request.params.roomCapacity);
     if (room.validate()) {
         databaseInterface.save(room);
@@ -133,7 +133,7 @@ server.get('/saveRoom', (request, reply) => {
     } 
 });
 
-server.get('/saveTimeslot', (request, reply) => {
+server.get('/createTimeslot', (request, reply) => {
     var timeslot:ValidatedTimeSlot = new ValidatedTimeSlot(request.params.uid, request.params.startTime, request.params.endTime);
     if (timeslot.validate()) {
         databaseInterface.save(timeslot);
@@ -143,7 +143,7 @@ server.get('/saveTimeslot', (request, reply) => {
     } 
 });
 
-server.get('/saveSpeaker', (request, reply) => {
+server.get('/createSpeaker', (request, reply) => {
     var speaker:ValidatedSpeaker = new ValidatedSpeaker(request.params.uid, request.params.speakerName, request.params.speakerEmail);
     if (speaker.validate()) {
         databaseInterface.save(speaker);
